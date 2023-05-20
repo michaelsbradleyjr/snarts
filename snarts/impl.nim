@@ -1,0 +1,1 @@
+func snart*(): bool = true
