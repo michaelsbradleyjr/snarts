@@ -2,16 +2,16 @@
 
 set -eo pipefail
 
-declare -a modules=(
-  snart1
-)
+source extras/examples.sh
 
 for module in ${modules[@]}; do
-  echo nim c "$@" examples/${module}.nim
-  nim c "$@" examples/${module}.nim
   echo
+  echo nim c "$@" examples/${module}.nim
+  echo
+  nim c "$@" examples/${module}.nim
 done
 
+echo
 if [[ -v MSYSTEM ]]; then
   ls -ladh examples/*.exe
 else
