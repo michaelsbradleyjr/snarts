@@ -1,1 +1,1 @@
-func snart*(): bool = true
+func snartImpl*(): bool = true

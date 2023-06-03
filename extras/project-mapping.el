@@ -1,10 +1,10 @@
 ;;; project-mapping.el --- lsp-mode project mapping for snarts
-;;
+
 ;; Copyright (c) 2023 Michael Bradley
 ;;
 ;; Author: Michael Bradley
 ;; URL: https://github.com/michaelsbradleyjr/snarts
-
+;;
 ;; This file is not part of GNU Emacs
 
 ;;; License:
