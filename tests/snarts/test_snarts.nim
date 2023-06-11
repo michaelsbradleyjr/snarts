@@ -49,12 +49,11 @@ suite "Validation":
       "has no states" in res4.unsafeError.errors[0].msg
 
     const
-      children1 = [atomic]
+      children1 = [atomic()]
       spec5 = statechart: children1
       spec6 = DataModel_1.statechart: children1
-
     let
-      children2 = @[atomic]
+      children2 = @[atomic()]
       spec7 = statechart: children1
       spec8 = DataModel_1.statechart: children2
 
