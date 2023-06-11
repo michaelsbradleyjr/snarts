@@ -134,7 +134,13 @@ jobs:
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
           if [[ ${{ matrix.nim_version }} = devel ]]; then
-            choosenim ${{ matrix.nim_version }} --latest
+            # workaround for `choosenim devel --latest` not working correctly
+            # in Windows + MSYS2
+            if [[ ${{ matrix.platform.os }} = windows ]]; then
+              choosenim ${{ matrix.nim_version }}
+            else
+              choosenim ${{ matrix.nim_version }} --latest
+            fi
           else
             choosenim "#${{ matrix.nim_version }}"
           fi
