@@ -15,6 +15,12 @@ func init(T: typedesc[DataModel_1]): T =
 
 suite "Validation":
   test "statechart must have one or more children":
+    # TODO: simplify
+    # for now this first test does a bit extra, primarily as a check that the
+    # basic facilities are working as expected; once the tests/suites have been
+    # expanded to check all of the facilities in a fine-grained manner this
+    # test can be simplified
+
     # enable to see how ValidationDefect looks in compile-time output
     # ---------------------------------------------------------------
     # const

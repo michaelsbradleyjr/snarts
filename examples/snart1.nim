@@ -1,3 +1,9 @@
+# TODO: simplify
+# for now this first example does a bit more than is desirable, primarily as a
+# check (along with the tests in ../tests) that the basic facilities are
+# working as expected; once the examples have been expanded to cover various
+# concepts and usage this example can be simplified
+
 import pkg/snarts
 
 type DataModel = object
