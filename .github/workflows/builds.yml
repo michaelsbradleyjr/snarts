@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 0 ]
+        cache_marker: [ 6 ]
         platform:
           - {
             icon: 🐧,
@@ -36,7 +36,7 @@ jobs:
             os: windows,
             shell: msys2
           }
-        nim_version: [ version-2-0, devel ]
+        nim_version: [ v1.2.8, version-1-2, version-1-4, version-1-6, version-2-0, devel ]
     name: ${{ matrix.platform.icon }} ${{ matrix.platform.label }} - Nim ${{ matrix.nim_version }}
     runs-on: ${{ matrix.platform.os }}-latest
     defaults:
@@ -124,14 +124,20 @@ jobs:
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mkdir -p "$(cygpath "${USERPROFILE}")/.nimble/bin"
           fi
-          CHOOSENIM_CHOOSE_VERSION=\#${{ matrix.nim_version }} \
-          CHOOSENIM_NO_ANALYTICS=1 \
+          export CHOOSENIM_NO_ANALYTICS=1
           ./init.sh -y
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
           fi
+          export NIMBLE_DIR="${HOME}/.nimble"
+          export PATH="${NIMBLE_DIR}/bin:${PATH}"
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
+          if [[ ${{ matrix.nim_version }} = devel ]]; then
+            choosenim ${{ matrix.nim_version }} --latest
+          else
+            choosenim "#${{ matrix.nim_version }}"
+          fi
 
       # maybe can be reworked (along with caching logic) re: Nimble
       # corresponding to Nim v2, with conditional logic for older Nim/Nimble

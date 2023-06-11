@@ -80,6 +80,7 @@ lcov --add-tracefile \
 
 echo
 lcov --extract coverage/coverage.info \
+     --ignore-errors unused \
      "${PWD}"/snarts.nim \
      "${PWD}"/snarts/\*.nim \
      >> coverage/extracted.info
