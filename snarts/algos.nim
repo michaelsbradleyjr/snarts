@@ -35,7 +35,7 @@ func compile*[T](statechart: Statechart[T]): Result[Machine[T], CompilerError] =
     stateIds: seq[string]
     # states to validate
     states: seq[State]
-  let scName =
+  let spec =
     if statechart.name.isSome:
       $statechart.name.get
     else:
@@ -64,7 +64,7 @@ func compile*[T](statechart: Statechart[T]): Result[Machine[T], CompilerError] =
   if statechart.initial.isSome and $statechart.initial.get notin stateIds:
     errors.add ValidationError(
       msg: "statechart specifies initial state " & statechart.initial.get.wrap &
-           " but no state in " & scName.wrap & " has that id")
+           " but no state in " & spec.wrap & " has that id")
   for state in states:
     # ... validation logic for this state ...
     # e.g. for each transition check that target state id is in stateIds
@@ -87,11 +87,11 @@ func compile*[T](statechart: Statechart[T]): Result[Machine[T], CompilerError] =
     if state.initial.isSome and $state.initial.get notin stateIds:
       errors.add ValidationError(
         msg: "state " & sId.wrap & " specifies initial state " &
-             state.initial.get.wrap & " but no state in " & scName.wrap &
+             state.initial.get.wrap & " but no state in " & spec.wrap &
              " has that id")
   if errors.len > 0:
-    err CompilerError(msg: "Statechart " & scName.wrap & " is invalid",
-      errors: errors, scName: scName)
+    err CompilerError(msg: "Statechart " & spec.wrap & " is invalid",
+      errors: errors, model: $statechart.model, spec: spec)
   else:
     # need to return Machine instance (not ref!) populated with tables,
     # etc. but ensure that the instance can be stored in a const
@@ -104,14 +104,14 @@ proc tryGet*[T](machineRes: Result[Machine[T], CompilerError]): Machine[T] =
     machineRes.get
   else:
     let error = machineRes.unsafeError
-    var msg = "\nStatechart " & error.scName.wrap & " had "
+    var msg = "\n\nStatechart[" & error.model & "] " & error.spec.wrap & " had "
     if error.errors.len > 1:
       msg &= "validation errors\n"
       for i, error in error.errors.pairs:
-        msg &= "[" & $(i + 1) & "] " & error.msg & "\n"
+        msg &= " [" & $(i + 1) & "] " & error.msg & "\n\n"
     else:
       msg &= "a validation error\n"
-      msg &= "[X] " & error.errors[0].msg & "\n"
+      msg &= " [X] " & error.errors[0].msg & "\n\n"
     raise (ref ValidationDefect)(msg: msg)
 
 

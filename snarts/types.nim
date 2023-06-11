@@ -69,7 +69,8 @@ type
 
   CompilerError* = object of CatchableError
     errors*: seq[ValidationError]
-    scName*: string
+    model*: string
+    spec*: string
 
   Configuration* = OrderedSet[State]
 
