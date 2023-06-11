@@ -2,6 +2,8 @@ import std/strutils
 import pkg/snarts
 import pkg/unittest2
 
+{.hint[CondTrue]: off.}
+
 type DataModel_1 = object
   x: string
 
