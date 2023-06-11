@@ -15,20 +15,6 @@ func init(T: typedesc[DataModel_1]): T =
 
 suite "Validation":
   test "statechart must have one or more children":
-    # TODO: simplify
-    # for now this first test does a bit extra, primarily as a check that the
-    # basic facilities are working as expected; once the tests/suites have been
-    # expanded to check all of the facilities in a fine-grained manner this
-    # test can be simplified
-
-    # enable to see how ValidationDefect looks in compile-time output
-    # ---------------------------------------------------------------
-    # const
-    #   spec0a = statechart: []
-    #   mac0a = spec0a.compile.tryGet
-    #   spec0b = DataModel_1.statechart("test"): []
-    #   mac0b = spec0b.compile.tryGet
-
     const
       spec1 = statechart: []
       spec2 = DataModel_1.statechart: []
@@ -63,25 +49,13 @@ suite "Validation":
       "has no states" in res4.unsafeError.errors[0].msg
 
     const
-      children1 = [
-        state("s1", [
-          state("s2", [
-            state([atomic "s3"])
-      ])])]
-
+      children1 = [atomic]
       spec5 = statechart: children1
-
       spec6 = DataModel_1.statechart: children1
 
     let
-      children2 = @[
-        state("s1", @[
-          state("s2", @[
-            state(@[atomic "s3"])
-      ])])]
-
+      children2 = @[atomic]
       spec7 = statechart: children1
-
       spec8 = DataModel_1.statechart: children2
 
     check:
@@ -103,14 +77,21 @@ suite "Validation":
       res8.isOk and res8.get of Machine[DataModel_1]
 
     const
-      mac5 = spec5.compile.tryGet
-      mac6 = spec6.compile.tryGet
+      mach5 = spec5.compile.tryGet
+      mach6 = spec6.compile.tryGet
     let
-      mac7 = spec7.compile.tryGet
-      mac8 = spec8.compile.tryGet
+      mach7 = spec7.compile.tryGet
+      mach8 = spec8.compile.tryGet
 
     check:
-      mac5 of Machine[Void]
-      mac6 of Machine[DataModel_1]
-      mac7 of Machine[Void]
-      mac8 of Machine[DataModel_1]
+      mach5 of Machine[Void]
+      mach6 of Machine[DataModel_1]
+      mach7 of Machine[Void]
+      mach8 of Machine[DataModel_1]
+
+    # enable to see how ValidationDefect is reported in compile-time output
+    # const
+    #   spec9  = statechart: []
+    #   mach9  = spec9.compile.tryGet
+    #   spec10 = DataModel_1.statechart: []
+    #   mach10 = spec10.compile.tryGet
