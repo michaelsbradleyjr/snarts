@@ -29,7 +29,6 @@ echo ""
 echo spec1
 echo ""
 echo machine1
-echo ""
 
 const
   spec2 = statechart("snart1"): [
@@ -46,7 +45,6 @@ echo ""
 echo spec2
 echo ""
 echo machine2
-echo ""
 
 let
   spec3 = statechart("snart1"): [
@@ -62,7 +60,6 @@ echo ""
 echo spec3
 echo ""
 echo machine3
-echo ""
 
 const
   spec4 = DataModel.statechart("snart1"): [
@@ -78,7 +75,6 @@ echo ""
 echo spec4
 echo ""
 echo machine4
-echo ""
 
 const
   spec5 = DataModel.statechart("snart1"): [
@@ -95,7 +91,6 @@ echo ""
 echo spec5
 echo ""
 echo machine5
-echo ""
 
 let
   spec6 = DataModel.statechart("snart1"): [
