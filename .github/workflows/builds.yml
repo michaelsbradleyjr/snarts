@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 6 ]
+        cache_marker: [ 7 ]
         platform:
           - {
             icon: 🐧,
