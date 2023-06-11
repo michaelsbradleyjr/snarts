@@ -57,30 +57,26 @@ suite "Validation":
       "has no states" in res4.unsafeError.errors[0].msg
 
     const
-      spec5 = statechart: [
+      children1 = [
         state("s1", [
           state("s2", [
             state([atomic "s3"])
       ])])]
 
-      spec6 = DataModel_1.statechart: [
-        state("s1", [
-          state("s2", [
-            state([atomic "s3"])
-      ])])]
+      spec5 = statechart: children1
+
+      spec6 = DataModel_1.statechart: children1
 
     let
-      spec7 = statechart: [
-        state("s1", [
-          state("s2", [
-            state([atomic "s3"])
+      children2 = @[
+        state("s1", @[
+          state("s2", @[
+            state(@[atomic "s3"])
       ])])]
 
-      spec8 = DataModel_1.statechart: [
-        state("s1", [
-          state("s2", [
-            state([atomic "s3"])
-      ])])]
+      spec7 = statechart: children1
+
+      spec8 = DataModel_1.statechart: children2
 
     check:
       spec5 of Statechart[Void]
