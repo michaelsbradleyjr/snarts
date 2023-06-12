@@ -7,5 +7,6 @@ installDirs  = @["snarts"]
 installFiles = @["LICENSE", "LICENSE-APACHEv2", "LICENSE-MIT", "snarts.nim"]
 
 requires "nim >= 1.2.8",
+         "chronos",
          "stew",
          "unittest2"
