@@ -38,31 +38,29 @@ type
 
   StateKind* = enum
     skState
-    skFinal,
-    skHistory,
-    skInitial,
     skParallel
+    skInitial
+    skFinal
+    skHistory
 
   State* = object
     case kind*: StateKind
     of skState:
       children*: seq[State]
-      id*: Opt[StateId]
       initial*: Opt[StateId]
       invocations*: seq[Invocation]
       onEntry*: seq[Action]
       onExit*: seq[Action]
       transitions*: seq[Transition]
-    # of skParallel:
-    #   children: seq[State]
-    #   id: Opt[StateId]
-    #   invocations: seq[Invocation]
-    #   onEntry: seq[Action]
-    #   onExit: seq[Action]
-    #   transitions: seq[Transition]
-    # get rid of else:
-    else:
+    of skParallel:
       discard
+    of skInitial:
+      discard
+    of skFinal:
+      discard
+    of skHistory:
+      discard
+    id*: Opt[StateId]
 
   Statechart*[T] = object
     children*: seq[State]
