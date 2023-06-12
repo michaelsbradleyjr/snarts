@@ -7,10 +7,7 @@
 # * try to use `AsyncEventQueue` for the blocking queue in the interpreter:
 #   https://github.com/status-im/nim-chronos/blob/master/chronos/asyncsync.nim#L690
 
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/[sets, strutils, tables]
 import ./types

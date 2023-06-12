@@ -9,10 +9,7 @@
 #   StatechartNodeKind; State (with its StateKind) would be one of the cases
 #   e.g. snkState
 
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/[sets, tables]
 import pkg/stew/results
