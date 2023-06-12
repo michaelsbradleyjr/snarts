@@ -2,6 +2,11 @@
 # State Chart XML (SCXML): State Machine Notation for Control Abstraction
 # W3C Recommendation 01 September 2015
 
+# TODO
+# * name interpreter `proc start` instead of `proc interpret`
+# * try to use `AsyncEventQueue` for the blocking queue in the interpreter:
+#   https://github.com/status-im/nim-chronos/blob/master/chronos/asyncsync.nim#L690
+
 when (NimMajor, NimMinor) >= (1, 4):
   {.push raises: [].}
 else:

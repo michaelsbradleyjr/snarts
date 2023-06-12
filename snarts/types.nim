@@ -2,6 +2,13 @@
 # State Chart XML (SCXML): State Machine Notation for Control Abstraction
 # W3C Recommendation 01 September 2015
 
+# TODO
+# * consider whether event and IDs could be enums supplied as generic params
+# * reconsider usages of distinct string
+# * consider wrapping everything in a StatechartNode type that uses case with
+#   StatechartNodeKind; State (with its StateKind) would be one of the cases
+#   e.g. snkState
+
 when (NimMajor, NimMinor) >= (1, 4):
   {.push raises: [].}
 else:
