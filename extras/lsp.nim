@@ -5,8 +5,9 @@
 # ./project-mapping.el and ../.vscode/settings.json
 
 import
-  examples/snart1,
-  snarts,
-  tests/test_all
+  # examples/snart1,
+  examples/snart2,
+  snarts#,
+  # tests/test_all
 
 {.warning[UnusedImport]: off.}

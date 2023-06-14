@@ -14,8 +14,8 @@ import ./types
 
 export types
 
-# don't delete, will be used eventually
-# -------------------------------------
+# don't delete, will be used eventually (at least `box` will be)
+# --------------------------------------------------------------
 # proc box[T](x: T): ref T =
 #   new result
 #   result[] = x

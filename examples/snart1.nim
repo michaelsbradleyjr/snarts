@@ -4,6 +4,8 @@
 #   working as expected; once the examples have been expanded to cover various
 #   concepts and usage this example can be simplified
 
+{.push raises: [].}
+
 import pkg/snarts
 
 type DataModel = object
