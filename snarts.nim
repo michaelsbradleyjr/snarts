@@ -35,7 +35,7 @@ template fixup(St, Ev, M, Evm, node: untyped) =
       n.insert(4, ident $Evm)
 
 macro statechart*[S: enum](
-    St: typedesc,
+    St: typedesc[S],
     Ev: typedesc,
     M: typedesc,
     Evm: typedesc,
@@ -43,16 +43,14 @@ macro statechart*[S: enum](
     initial: S,
     children: untyped): auto =
 
-  # need to assert that typeof(S) is St
-  # need to assert that typeof(M.id) is St
-  # need to assert that typeof(Evm.name) is Ev
-
   debugEcho ""
   debugEcho treeRepr children
 
   fixup(St, Ev, M, Evm, children)
   let tName = bindSym"name"
   result = quote do:
+    assert typeof(`M`.id) is `St`
+    assert typeof(`Evm`.name) is `Ev`
     Statechart[`St`, `Ev`, `M`, `Evm`](
       initial: Opt.some `initial`,
       name: (if `name` == "": Opt.none SpecName else: Opt.some SpecName `name`),
@@ -81,15 +79,13 @@ macro state*[S: enum](
     initial: S,
     children: untyped): auto =
 
-  # need to assert that typeof(S) is St
-  # need to assert that typeof(M.id) is St
-  # need to assert that typeof(Evm.name) is Ev
-
   debugEcho ""
   debugEcho treeRepr children
 
   fixup(St, Ev, M, Evm, children)
   result = quote do:
+    assert typeof(`M`.id) is `St`
+    assert typeof(`Evm`.name) is `Ev`
     StatechartNode[`St`, `Ev`, `M`, `Evm`](
       kind: snkState,
       sId: Opt.some `id`,
@@ -121,6 +117,8 @@ macro state*[S: enum](
 #     event = ident "event"
 #     config = ident "config"
 #   result = quote do:
+#     assert typeof(`M`.id) is `St`
+#     assert typeof(`Evm`.name) is `Ev`
 #     StatechartNode[`St`, `Ev`, `M`, `Evm`](
 #       kind: snkTransition,
 #       exe: proc(`data`: `M`, `event`: `Evm`, `config`: Configuration[`St`])
