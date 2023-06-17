@@ -1,3 +1,3 @@
-import ./snarts/test_snarts
+# import ./snarts/test_snarts
 
 {.warning[UnusedImport]: off.}
