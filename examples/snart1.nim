@@ -1,111 +1,65 @@
-# TODO
-# * for now this first example does a bit more than is desirable, primarily as
-#   a check (along with the tests in ../tests) that the basic facilities are
-#   working as expected; once the examples have been expanded to cover various
-#   concepts and usage this example can be simplified
-
 {.push raises: [].}
 
 import pkg/snarts
 
-type DataModel = object
-  x: string
+type
+  States = enum
+    root, st1, st2
 
-func init(T: typedesc[DataModel], x: string): T =
-  T(x: x)
+  Events = enum
+    evA, evB
 
-func init(T: typedesc[DataModel]): T =
-  T.init("default")
+  Data = object
+    case id: States
+    else:
+      x: string
+
+  Event = object
+    case name: Events
+    of evA:
+      y: int
+    of evB:
+      z: string
 
 const
-  spec1 = statechart("snart1"): [
-    state("s1", [
-      state("s2", [
-        state([
-          state([atomic "s3"])
-  ])])])]
+  spec1 = statechart(States, Events, Data, Event, "snart2", st1): []
 
-  machine1 = spec1.compile.tryGet
+  state1 = state(States, Events, Data, Event, st1, st2): []
+
+  spec2 = statechart(States, Events, Data, Event, "", st1): [state1]
+
+  spec3 = statechart(States, Events, Data, Event, "snart2", st1): [
+    state(st1, st2, [])
+  ]
+
+  spec4 = statechart(States, Events, Data, Event, "snart2", st2): [
+    state(st1, st2, []),
+    state(st2, st1, [])
+  ]
+
+  spec5 = statechart(States, Events, Data, Event, "snart2", st2): @[
+    state(st1, st2, [
+      state(st2, st1, [
+        state1,
+        state(st2, st1, [])
+    ])]),
+    state(st1, st2, @[
+      state(st2, st1, [state1, state1]),
+      state1
+    ])
+  ]
 
 echo ""
 echo spec1
 echo ""
-echo machine1
-
-const
-  spec2 = statechart("snart1"): [
-    state("s1", [
-      state("s2", [
-        state([
-          state([atomic "s3"])
-  ])])])]
-
-let
-  machine2 = spec2.compile.tryGet
-
+echo state1
 echo ""
 echo spec2
 echo ""
-echo machine2
-
-let
-  spec3 = statechart("snart1"): [
-    state("s1", [
-      state("s2", [
-        state([
-          state([atomic "s3"])
-  ])])])]
-
-  machine3 = spec3.compile.tryGet
-
-echo ""
 echo spec3
-echo ""
-echo machine3
-
-const
-  spec4 = DataModel.statechart("snart1"): [
-    state("s1", [
-      state("s2", [
-        state([
-          state([atomic "s3"])
-  ])])])]
-
-  machine4 = spec4.compile.tryGet
-
 echo ""
 echo spec4
 echo ""
-echo machine4
-
-const
-  spec5 = DataModel.statechart("snart1"): [
-    state("s1", [
-      state("s2", [
-        state([
-          state([atomic "s3"])
-  ])])])]
-
-let
-  machine5 = spec5.compile.tryGet
-
-echo ""
 echo spec5
-echo ""
-echo machine5
 
-let
-  spec6 = DataModel.statechart("snart1"): [
-    state("s1", [
-      state("s2", [
-        state([
-          state([atomic "s3"])
-  ])])])]
-
-  machine6 = spec6.compile.tryGet
-
-echo ""
-echo spec6
-echo ""
-echo machine6
 echo ""
