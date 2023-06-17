@@ -21,7 +21,7 @@ type
     of evB:
       z: string
 
-const
+const # let
   spec1 = statechart(States, Events, Data, Event, "snart2", st1): []
 
   state1 = state(States, Events, Data, Event, st1, st2): []
