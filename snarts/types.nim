@@ -20,11 +20,11 @@ export results
 type
   CompilerError* = object of CatchableError
     errors*: seq[ValidationError]
-    spec*: SpecName
-    dataModel*: SpecName
-    eventModel*: SpecName
-    events*: SpecName
-    states*: SpecName
+    spec*: string
+    dataModel*: string
+    eventModel*: string
+    events*: string
+    states*: string
 
   # ?? do the members need to carry more information, e.g. State objects per
   # the disabled code below
@@ -41,8 +41,6 @@ type
   #   externalQueue*: seq[Em]
   #   historyValue*: Table[...] # not sure yet about key,value types
   #   running*: bool
-
-  SpecName* = distinct string
 
   # StateKind* = enum
   #   skState
@@ -68,12 +66,8 @@ type
 
   Statechart*[St: enum; Ev: enum; Dm; Em] = object
     initial*: Opt[St]
-    name*: Opt[SpecName]
-    dataModel*: SpecName
+    name*: Opt[string]
     children*: seq[StatechartNode[St, Ev, Dm, Em]]
-    eventModel*: SpecName
-    events*: SpecName
-    states*: SpecName
 
   StatechartNodeKind* = enum
     snkState
@@ -124,6 +118,3 @@ type
   ValidationDefect* = object of Defect
 
   ValidationError* = object of CatchableError
-
-func `$`*(x: SpecName): string =
-  x.string
