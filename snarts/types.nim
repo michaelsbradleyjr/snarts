@@ -26,19 +26,20 @@ type
     events*: SpecName
     states*: SpecName
 
-  # ?? do the members need to carry more information, e.g. State objects
+  # ?? do the members need to carry more information, e.g. State objects per
+  # the disabled code below
   Configuration*[St: enum] = OrderedSet[St]
 
   HistoryKind* = enum
     hkShallow, hkDeep
 
-  # Machine*[T; St: enum; Ev: enum; Evd] = object
+  # Machine*[St: enum; Ev: enum; Dm; Em] = object
   #   configuration*: Configuration[St]
-  #   statesToInvoke*: OrderedSet[StatechartNode[St, Ev]]
+  #   statesToInvoke*: OrderedSet[...]
   #   data*: T
-  #   internalQueue*: seq[Event[Ev, Evd]]
-  #   externalQueue*: seq[Event[Ev, Evd]]
-  #   historyValue*: Table[int, int] # not sure yet about key,value types
+  #   internalQueue*: seq[Em]
+  #   externalQueue*: seq[Em]
+  #   historyValue*: Table[...] # not sure yet about key,value types
   #   running*: bool
 
   SpecName* = distinct string
@@ -63,13 +64,13 @@ type
   #     fId*: Opt[St]
   #   of skHistory:
   #     hId*: Opt[St]
-  #     hType*: HistoryKind
+  #     hKind*: HistoryKind
 
-  Statechart*[St: enum; Ev: enum; M; Evm] = object
+  Statechart*[St: enum; Ev: enum; Dm; Em] = object
     initial*: Opt[St]
     name*: Opt[SpecName]
     dataModel*: SpecName
-    children*: seq[StatechartNode[St, Ev, M, Evm]]
+    children*: seq[StatechartNode[St, Ev, Dm, Em]]
     eventModel*: SpecName
     events*: SpecName
     states*: SpecName
@@ -84,35 +85,38 @@ type
     snkOnExit
     snkHistory
 
-  StatechartNode*[St: enum; Ev: enum; M; Evm] = object
+  StatechartNode*[St: enum; Ev: enum; Dm; Em] = object
     case kind*: StatechartNodeKind
     of snkState:
       sId*: Opt[St]
       sInitial*: Opt[St]
-      sChildren*: seq[StatechartNode[St, Ev, M, Evm]]
+      sChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
     of snkParallel:
       pId*: Opt[St]
-      pChildren*: seq[StatechartNode[St, Ev, M, Evm]]
+      pChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
     of snkTransition:
       tEvent*: Opt[Ev]
-      tCond*: proc(data: M, event: Evm, config: Configuration[St]): bool
-                {.nimcall, noSideEffect, raises: [].}
+      tCond*: Opt[
+        proc(data: Dm, event: Em, config: Configuration[St]): bool
+          {.nimcall, noSideEffect, raises: [].}]
       tTarget*: Opt[St]
-      tType*: TransitionKind
-      tExe*: proc(data: ref M, event: Evm, config: Configuration[St])
-               {.nimcall, noSideEffect, raises: [].}
+      tKind*: TransitionKind
+      tExe*: Opt[
+        proc(data: ref Dm, event: Em, config: Configuration[St])
+          {.nimcall, noSideEffect, raises: [].}]
     of snkInitial:
-      iChildren*: seq[StatechartNode[St, Ev, M, Evm]]
+      iChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
     of snkFinal:
       fId*: Opt[St]
-      fChildren*: seq[StatechartNode[St, Ev, M, Evm]]
+      fChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
     of snkOnEntry, snkOnExit:
-      oExe*: proc(data: ref M, event: Evm, config: Configuration[St])
-               {.nimcall, noSideEffect, raises: [].}
+      oExe*: (
+        proc(data: ref Dm, event: Em, config: Configuration[St])
+          {.nimcall, noSideEffect, raises: [].})
     of snkHistory:
       hId*: Opt[St]
-      hType*: HistoryKind
-      hChildren*: seq[StatechartNode[St, Ev, M, Evm]]
+      hKind*: HistoryKind
+      hChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
 
   TransitionKind* = enum
     tkExternal, tkInternal
