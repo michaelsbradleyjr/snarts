@@ -8,6 +8,8 @@
 #   which would extend it with `any`, `done`, etc.
 # * likewise consider a `setup` macro {.setup.} that can be used when declaring
 #   the St enum type, which would extend it with `root`, etc.
+# * consider toStrLit and parseStmt (std/macros) in relation to oExe, tCond,
+#   tExe; not sure yet of the interplay with let/const and snarts/algos.compile
 
 {.push raises: [].}
 
