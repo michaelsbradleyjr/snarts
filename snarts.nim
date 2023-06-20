@@ -52,9 +52,9 @@ macro fixup(St, Ev, Dm, Em, children: untyped): auto =
   # if possible, fixup should only attempt to modify calls that are calls to
   # the macros defined in this module
 
-  # would be nice if could recognize "bare call" to e.g. `atomic` or `final`,
-  # but would need a macro overload of that name that takes zero arguments, and
-  # the call itself would need to be swapped for the non-bare one with `St`, et
+  # would be nice if could recognize "bare call" to e.g. `final`, but would
+  # need a macro overload of that name that takes zero arguments, and the call
+  # itself would need to be swapped for the non-bare one with `St`, et
   # al. filled in
 
   # debugEcho ""
@@ -129,18 +129,6 @@ template statechart*(
     scInitial = Opt.some initial,
     scName = (if name == "": Opt.none string else: Opt.some name),
     scChildren = fixup(St, Ev, Dm, Em, children))
-
-template atomic*(
-    St, Ev, Dm, Em: typedesc):
-      auto =
-  initState[St, Ev, Dm, Em]()
-
-template atomic*(
-    St, Ev, Dm, Em: typedesc,
-    id: St):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sId = Opt.some id)
 
 template anon*(
     St, Ev, Dm, Em: typedesc,
