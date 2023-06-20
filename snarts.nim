@@ -57,13 +57,14 @@ macro fixup(St, Ev, Dm, Em, children: untyped): auto =
   # itself would need to be swapped for the non-bare one with `St`, et
   # al. filled in
 
-  # debugEcho ""
-  # debugEcho treeRepr St
-  # debugEcho treeRepr Ev
-  # debugEcho treeRepr Dm
-  # debugEcho treeRepr Em
-  # debugEcho ""
-  # debugEcho treeRepr children
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho treeRepr St
+    debugEcho treeRepr Ev
+    debugEcho treeRepr Dm
+    debugEcho treeRepr Em
+    debugEcho ""
+    debugEcho treeRepr children
   var bracket: NimNode
   if children.len > 0:
     if children.kind == nnkBracket:
@@ -86,13 +87,15 @@ macro fixup(St, Ev, Dm, Em, children: untyped): auto =
       n.insert(2, ident $Ev)
       n.insert(3, ident $Dm)
       n.insert(4, ident $Em)
-  # debugEcho ""
-  # debugEcho treeRepr children
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho treeRepr children
   result = quote do:
     `children`
-  # debugEcho ""
-  # debugEcho toStrLit result
-  # debugEcho ""
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho toStrLit result
+    debugEcho ""
 
 template statechart*(
     St, Ev, Dm, Em: typedesc,
