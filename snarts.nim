@@ -8,10 +8,9 @@ import ./snarts/types
 # export algos, types
 export types
 
-macro convention(T1, T2: untyped, field: static string): untyped =
+macro convention(T1, T2: untyped, fieldName: static string): untyped =
   let
-    field = ident field
-    fieldName = $field
+    field = ident fieldName
   result = quote do:
     static:
       when compiles(`T1`.`field`):
@@ -25,72 +24,30 @@ macro convention(T1, T2: untyped, field: static string): untyped =
           "type " & typetraits.name(`T1`) & " does not have required field \"" &
           `fieldName` & "\"")
 
-func init*[St: enum, Ev: enum, Dm, Em](
-    T: typedesc[Statechart[St, Ev, Dm, Em]],
-    initial: Opt[St] = Opt.none St,
-    name: Opt[string] = Opt.none string,
-    children: openArray[StatechartNode[St, Ev, Dm, Em]] = []): T =
+func initStatechart[St: enum, Ev: enum, Dm, Em](
+    scInitial: Opt[St] = Opt.none St,
+    scName: Opt[string] = Opt.none string,
+    scChildren: openArray[StatechartNode[St, Ev, Dm, Em]] = []):
+      Statechart[St, Ev, Dm, Em] =
   convention(Dm, St, "id")
   convention(Em, Ev, "name")
-  T(initial: initial,
-    name: name,
-    children: @children)
+  Statechart[St, Ev, Dm, Em](
+    initial: scInitial,
+    name: scName,
+    children: @scChildren)
 
-# works
-# -----
-# macro statechart*[S: enum](
-#     St: typedesc[S], Ev, Dm, Em: typedesc,
-#     minitial: S,
-#     mname: string,
-#     mchildren: untyped):
-#     auto =
-#   result = quote do:
-#     init[`St`, `Ev`, `Dm`, `Em`](Statechart,
-#       initial = Opt.some `minitial`,
-#       name = (if `mname` == "": Opt.none string else: Opt.some `mname`),
-#       children = `mchildren`)
-#
-#   debugEcho toStrLit result
-
-# works
-# -----
-# template statechart*[S: enum](
-#     St: typedesc[S], Ev, Dm, Em: typedesc,
-#     tinitial: S,
-#     tname: string,
-#     tchildren: untyped):
-#     auto =
-#   Statechart[St, Ev, Dm, Em].init(
-#     initial = Opt.some tinitial,
-#     name = (if tname == "": Opt.none string else: Opt.some tname),
-#     children = tchildren)
-
-# works
-# -----
-# template statechart*(
-#     St, Ev, Dm, Em: typedesc,
-#     tinitial: St,
-#     tname: string,
-#     tchildren: untyped):
-#     auto =
-#   Statechart[St, Ev, Dm, Em].init(
-#     initial = Opt.some tinitial,
-#     name = (if tname == "": Opt.none string else: Opt.some tname),
-#     children = tchildren)
-
-# works
-# -----
-# template statechart*[St, Ev, Dm, Em](
-#     tinitial: St,
-#     tname: string,
-#     tchildren: untyped):
-#     auto =
-#   Statechart[St, Ev, Dm, Em].init(
-#     initial = Opt.some tinitial,
-#     name = (if tname == "": Opt.none string else: Opt.some tname),
-#     children = tchildren)
-
-# ? which one will work with fixup
+func initState[St: enum, Ev: enum, Dm, Em](
+    sId: Opt[St] = Opt.none St,
+    sInitial: Opt[St] = Opt.none St,
+    sChildren: openArray[StatechartNode[St, Ev, Dm, Em]] = []):
+      StatechartNode[St, Ev, Dm, Em] =
+  convention(Dm, St, "id")
+  convention(Em, Ev, "name")
+  StatechartNode[St, Ev, Dm, Em](
+    kind: snkState,
+    sId: sId,
+    sInitial: sInitial,
+    sChildren: @sChildren)
 
 macro fixup(St, Ev, Dm, Em, children: untyped) =
   debugEcho ""
@@ -102,46 +59,140 @@ macro fixup(St, Ev, Dm, Em, children: untyped) =
   debugEcho treeRepr children
   debugEcho ""
 
-template statechart*(
-    St, Ev, Dm, Em: typedesc,
-    tchildren: untyped):
-    auto =
-  fixup(St, Ev, Dm, Em, tchildren)
-  Statechart[St, Ev, Dm, Em].init(
-    children = tchildren)
+# macro fixup(St, Ev, Dm, Em, children: untyped) =
+#   # if possible, fixup should only attempt to modify calls that are calls to
+#   # the macros defined in this module
+#
+#   # would be nice if could recognize "bare call" to e.g. `atomic` or `final`,
+#   # but would need a macro overload of that name that takes zero arguments, and
+#   # the call itself would need to be swapped for the non-bare one with `St`, et
+#   # al. filled in
+#
+#   debugEcho ""
+#   debugEcho "FIXUP FIXUP FIXUP"
+#   debugEcho ""
+#   debugEcho treeRepr children
+#   debugEcho ""
+#
+#   var bracket: NimNode
+#   if children.len > 0:
+#     if children.kind == nnkBracket:
+#       bracket = children
+#     elif children.kind == nnkStmtList and
+#          children[0].kind == nnkBracket:
+#       bracket = children[0]
+#     elif children.kind == nnkStmtList and
+#          children[0].kind == nnkPrefix and
+#          children[0][0] == ident("@") and
+#          children[0][1].kind == nnkBracket:
+#       bracket = children[0][1]
+#     elif children.kind == nnkPrefix and
+#          children[0] == ident("@") and
+#          children[1].kind == nnkBracket:
+#       bracket = children[1]
+#   if bracket.len < 5:
+#     for n in bracket:
+#       if n.kind == nnkCall:
+#         n.insert(1, ident $St)
+#         n.insert(2, ident $Ev)
+#         n.insert(3, ident $Dm)
+#         n.insert(4, ident $Em)
+#
+#   debugEcho "FIXED FIXED FIXED"
+#   debugEcho ""
+#   debugEcho treeRepr children
+#   debugEcho ""
 
 template statechart*(
     St, Ev, Dm, Em: typedesc,
-    tinitial: St,
-    tchildren: untyped):
-    auto =
-  fixup(St, Ev, Dm, Em, tchildren)
-  Statechart[St, Ev, Dm, Em].init(
-    initial = Opt.some tinitial,
-    children = tchildren)
+    children: untyped):
+      auto =
+  fixup(St, Ev, Dm, Em, children)
+  initStatechart[St, Ev, Dm, Em](
+    scChildren = children)
 
 template statechart*(
     St, Ev, Dm, Em: typedesc,
-    tname: string,
-    tchildren: untyped):
-    auto =
-  fixup(St, Ev, Dm, Em, tchildren)
-  Statechart[St, Ev, Dm, Em].init(
-    name = (if tname == "": Opt.none string else: Opt.some tname),
-    children = tchildren)
+    initial: St,
+    children: untyped):
+      auto =
+  fixup(St, Ev, Dm, Em, children)
+  initStatechart[St, Ev, Dm, Em](
+    scInitial = Opt.some initial,
+    scChildren = children)
 
 template statechart*(
     St, Ev, Dm, Em: typedesc,
-    tinitial: St,
-    tname: string,
-    tchildren: untyped):
-    auto =
-  fixup(St, Ev, Dm, Em, tchildren)
-  Statechart[St, Ev, Dm, Em].init(
-    initial = Opt.some tinitial,
-    name = (if tname == "": Opt.none string else: Opt.some tname),
-    children = tchildren)
+    name: string,
+    children: untyped):
+      auto =
+  fixup(St, Ev, Dm, Em, children)
+  initStatechart[St, Ev, Dm, Em](
+    scName = (if name == "": Opt.none string else: Opt.some name),
+    scChildren = children)
 
+template statechart*(
+    St, Ev, Dm, Em: typedesc,
+    initial: St,
+    name: string,
+    children: untyped):
+      auto =
+  initStatechart[St, Ev, Dm, Em](
+    scInitial = Opt.some initial,
+    scName = (if name == "": Opt.none string else: Opt.some name),
+    scChildren = children)
+
+template atomic*(
+    St, Ev, Dm, Em: typedesc):
+      auto =
+  initState[St, Ev, Dm, Em]()
+
+template atomic*(
+    St, Ev, Dm, Em: typedesc,
+    id: St):
+      auto =
+  initState[St, Ev, Dm, Em](
+    sId = Opt.some id)
+
+template anon*(
+    St, Ev, Dm, Em: typedesc,
+    children: untyped):
+      auto =
+  fixup(St, Ev, Dm, Em, children)
+  initState[St, Ev, Dm, Em](
+    sChildren = children)
+
+template anon*(
+    St, Ev, Dm, Em: typedesc,
+    initial: St,
+    children: untyped):
+      auto =
+  fixup(St, Ev, Dm, Em, children)
+  initState[St, Ev, Dm, Em](
+    sInitial = Opt.some initial,
+    sChildren = children)
+
+template state*(
+    St, Ev, Dm, Em: typedesc,
+    id: St,
+    children: untyped):
+      auto =
+  fixup(St, Ev, Dm, Em, children)
+  initState[St, Ev, Dm, Em](
+    sId = Opt.some id,
+    sChildren = children)
+
+template state*(
+    St, Ev, Dm, Em: typedesc,
+    id: St,
+    initial: St,
+    children: untyped):
+      auto =
+  fixup(St, Ev, Dm, Em, children)
+  initState[St, Ev, Dm, Em](
+    sId = Opt.some id,
+    sInitial = Opt.some initial,
+    sChildren = children)
 
 # old stuff
 # ------------------------------------------------------------------------------

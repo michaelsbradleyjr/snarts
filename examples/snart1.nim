@@ -4,7 +4,7 @@ import pkg/snarts
 
 type
   States = enum
-    st1, st2
+    st1, st2, st3
 
   Events = enum
     evA, evB
@@ -23,46 +23,26 @@ type
 # ------------------------------------------------------------------------------
 
 let # const
-  spec1 = Statechart[States, Events, Data, Event].init
-  spec2 = Statechart[States, Events, Data, Event].init(
-    initial = Opt.some st1)
-  spec3 = Statechart[States, Events, Data, Event].init(
-    name = Opt.some "snart1")
-  spec4 = Statechart[States, Events, Data, Event].init(
-    children = [])
-  spec5 = Statechart[States, Events, Data, Event].init(
-    children = @[])
-  spec6 = Statechart[States, Events, Data, Event].init(
-    Opt.some st1)
-  spec7 = Statechart[States, Events, Data, Event].init(
-    Opt.some st1,
-    Opt.some "snart1")
-  spec8 = Statechart[States, Events, Data, Event].init(
-    Opt.some st1,
-    Opt.some "snart1",
-    [])
-  spec9 = Statechart[States, Events, Data, Event].init(
-    Opt.some st1,
-    Opt.some "snart1",
-    @[])
+  spec1 = statechart(States, Events, Data, Event,
+    st1, "snart1", [])
 
-  spec10 = statechart(States, Events, Data, Event,
-    st1,
-    "snart1",
-    [])
+  spec2 = statechart(States, Events, Data, Event,
+    st1, "snart1", @[])
 
-  spec11 = statechart(States, Events, Data, Event,
-    st1,
-    "snart1",
-    @[])
+  spec3 = statechart(States, Events, Data, Event,
+    st1, "snart1"): []
 
-  spec12 = statechart(States, Events, Data, Event,
-    st1,
-    "snart1"): []
+  spec4 = statechart(States, Events, Data, Event,
+    st1, "snart1"): @[]
 
-  spec13 = statechart(States, Events, Data, Event,
-    st1,
-    "snart1"): @[]
+  state1 = state(States, Events, Data, Event,
+    st1, st2): []
+
+  spec5 = statechart(States, Events, Data, Event,
+    st1, "snart1"): [state1]
+
+  spec6 = statechart(States, Events, Data, Event,
+    st1, "snart1"): [state(States, Events, Data, Event, st1, st2, [])]
 
 
 
@@ -75,29 +55,16 @@ echo spec3
 echo ""
 echo spec4
 echo ""
+echo spec4.St
+echo spec4.Ev
+echo spec4.Dm
+echo spec4.Em
+echo ""
+echo state1
+echo ""
 echo spec5
 echo ""
 echo spec6
-echo ""
-echo spec7
-echo ""
-echo spec8
-echo ""
-echo spec9
-echo ""
-echo spec10
-echo ""
-echo spec11
-echo ""
-echo spec12
-echo ""
-echo spec13
-
-echo ""
-echo spec13.St
-echo spec13.Ev
-echo spec13.Dm
-echo spec13.Em
 
 
 
