@@ -6,7 +6,7 @@
 
 import
   examples/snart1,
-  snarts#,
-  #tests/test_all
+  snarts,
+  tests/test_all
 
 {.warning[UnusedImport]: off.}
