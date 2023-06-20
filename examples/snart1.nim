@@ -73,7 +73,7 @@ echo spec7
 
 echo ""
 
-# when the pieces are in place, snart1 examples should consist of the following
+# when the pieces are in place, snart1 example should consist of the following
 # ------------------------------------------------------------------------------
 # import pkg/snarts
 #
@@ -106,16 +106,16 @@ echo ""
 #
 #   machine = spec.compile
 #
-# let service = machine.start
+# let actor = machine.start
 #
-# service.send Event(name: toggle)
+# actor.send Event(name: toggle)
 #
-# echo service.config
+# echo actor.config
 # => {active}
 #
-# service.send Event(name: toggle)
+# actor.send Event(name: toggle)
 #
-# echo service.config
+# echo actor.config
 # => {inactive}
 #
-# service.stop
+# actor.stop
