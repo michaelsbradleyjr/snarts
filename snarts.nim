@@ -8,7 +8,7 @@ import ./snarts/types
 # export algos, types
 export types
 
-macro enforce(T1, T2: untyped, fieldName: static string): untyped =
+macro enforce(T1, T2: untyped; fieldName: static string): untyped =
   let field = ident fieldName
   result = quote do:
     static:
@@ -23,7 +23,7 @@ macro enforce(T1, T2: untyped, fieldName: static string): untyped =
           "type " & typetraits.name(`T1`) & " does not have required field \"" &
           `fieldName` & "\"")
 
-func initStatechart[St: enum, Ev: enum, Dm, Em](
+func initStatechart*[St: enum; Ev: enum; Dm: object; Em: object](
     scInitial: Opt[St] = Opt.none St,
     scName: Opt[string] = Opt.none string,
     scChildren: openArray[StatechartNode[St, Ev, Dm, Em]] = []):
@@ -35,7 +35,7 @@ func initStatechart[St: enum, Ev: enum, Dm, Em](
     name: scName,
     children: @scChildren)
 
-func initState[St: enum, Ev: enum, Dm, Em](
+func initState*[St: enum; Ev: enum; Dm: object; Em: object](
     sId: Opt[St] = Opt.none St,
     sInitial: Opt[St] = Opt.none St,
     sChildren: openArray[StatechartNode[St, Ev, Dm, Em]] = []):
