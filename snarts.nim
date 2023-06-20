@@ -103,15 +103,6 @@ template statechart*(
 
 template statechart*(
     St, Ev, Dm, Em: typedesc,
-    initial: St,
-    children: untyped):
-      auto =
-  initStatechart[St, Ev, Dm, Em](
-    scInitial = Opt.some initial,
-    scChildren = fixup(St, Ev, Dm, Em, children))
-
-template statechart*(
-    St, Ev, Dm, Em: typedesc,
     name: string,
     children: untyped):
       auto =
@@ -122,7 +113,16 @@ template statechart*(
 template statechart*(
     St, Ev, Dm, Em: typedesc,
     initial: St,
+    children: untyped):
+      auto =
+  initStatechart[St, Ev, Dm, Em](
+    scInitial = Opt.some initial,
+    scChildren = fixup(St, Ev, Dm, Em, children))
+
+template statechart*(
+    St, Ev, Dm, Em: typedesc,
     name: string,
+    initial: St,
     children: untyped):
       auto =
   initStatechart[St, Ev, Dm, Em](
