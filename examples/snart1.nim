@@ -19,28 +19,31 @@ type
     else:
       discard
 
+# move/adapt the following code to tests
+# ------------------------------------------------------------------------------
+
 let # const
   state1 = state(States, Events, Data, Event, st1, st2): []
 
-  spec1 = statechart(States, Events, Data, Event, st1, "snart1", [])
+  spec1 = statechart(States, Events, Data, Event, "snart1", st1, [])
 
-  spec2 = statechart(States, Events, Data, Event, st1, "snart1", @[])
+  spec2 = statechart(States, Events, Data, Event, "snart1", st1, @[])
 
-  spec3 = statechart(States, Events, Data, Event, st1, "snart1"): []
+  spec3 = statechart(States, Events, Data, Event, "snart1", st1): []
 
-  spec4 = statechart(States, Events, Data, Event, st1, "snart1"): @[]
+  spec4 = statechart(States, Events, Data, Event, "snart1", st1): @[]
 
-  spec5 = statechart(States, Events, Data, Event, st1, "snart1"): [
+  spec5 = statechart(States, Events, Data, Event, "snart1", st1): [
     state1
   ]
 
-  spec6 = statechart(States, Events, Data, Event, st1, "snart1"): [
+  spec6 = statechart(States, Events, Data, Event, "snart1", st1): [
     state1,
     state(States, Events, Data, Event, st1, st2, []),
     state1
   ]
 
-  spec7 = statechart(States, Events, Data, Event, st1, "snart1"): [
+  spec7 = statechart(States, Events, Data, Event, "snart1", st1): [
     state1,
     state(st1, st2, []),
     state1
@@ -69,3 +72,50 @@ echo ""
 echo spec7
 
 echo ""
+
+# when the pieces are in place, snart1 examples should consist of the following
+# ------------------------------------------------------------------------------
+# import pkg/snarts
+#
+# type
+#   States = enum
+#     inactive, active
+#
+#   Events = enum
+#     toggle
+#
+#   Data = object
+#     id: States
+#
+#   Event = object
+#     name: Events
+#
+# const
+#   spec = statechart(
+#     States, Events, Data, Event,
+#     id = "toggle1",
+#     initial = inactive
+#   ):[
+#       state(active, [
+#         transition(toggle, inactive)
+#       ]),
+#       state(inactive, [
+#         transition(toggle, active)
+#       ])
+#   ]
+#
+#   machine = spec.compile
+#
+# let service = machine.start
+#
+# service.send Event(name: toggle)
+#
+# echo service.config
+# => {active}
+#
+# service.send Event(name: toggle)
+#
+# echo service.config
+# => {inactive}
+#
+# service.stop
