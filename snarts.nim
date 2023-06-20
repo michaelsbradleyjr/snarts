@@ -14,12 +14,12 @@ macro enforce(T1, T2: untyped; fieldName: static string): untyped =
     static:
       when compiles(`T1`.`field`):
         if typeof(`T1`.`field`) isnot `T2`:
-          raise (ref ValidationDefect)(msg:
+          raise (ref AssertionDefect)(msg:
             "field \"" & `fieldName` & "\" of type " & typetraits.name(`T1`) &
             " is type " & typetraits.name(`T1`.`field`) &
             " but is required to be type " & typetraits.name(`T2`))
       else:
-        raise (ref ValidationDefect)(msg:
+        raise (ref AssertionDefect)(msg:
           "type " & typetraits.name(`T1`) & " does not have required field \"" &
           `fieldName` & "\"")
 
