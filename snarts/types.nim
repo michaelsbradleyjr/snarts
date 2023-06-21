@@ -67,9 +67,9 @@ type
   #     hKind*: HistoryKind
 
   Statechart*[St: enum; Ev: enum; Dm: object; Em: object] = object
-    initial*: Opt[St]
-    name*: Opt[string]
-    children*: seq[StatechartNode[St, Ev, Dm, Em]]
+    scInitial*: Opt[St]
+    scName*: Opt[string]
+    scChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
 
   StatechartNodeKind* = enum
     snkState

@@ -31,9 +31,9 @@ func initStatechart*[St: enum; Ev: enum; Dm: object; Em: object](
   enforce(Dm, St, "id")
   enforce(Em, Ev, "name")
   Statechart[St, Ev, Dm, Em](
-    initial: scInitial,
-    name: scName,
-    children: @scChildren)
+    scInitial: scInitial,
+    scName: scName,
+    scChildren: @scChildren)
 
 func initState*[St: enum; Ev: enum; Dm: object; Em: object](
     sId: Opt[St] = Opt.none St,
