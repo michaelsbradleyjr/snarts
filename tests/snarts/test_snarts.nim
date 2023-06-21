@@ -1,8 +1,6 @@
 import pkg/snarts
 import pkg/unittest2
 
-# {.hint[CondTrue]: off.}
-
 suite "Templates":
   test "combinations of usage should not cause compile-time errors":
     type
@@ -65,13 +63,19 @@ suite "Templates":
     echo ""
     echo spec7
 
-    echo ""
-
     check:
       spec1.St is States
       spec1.Ev is Events
       spec1.Dm is Data
       spec1.Em is Event
+
+    const
+      tran1 = initTransition[States, Events, Data, Event]()
+
+    echo ""
+    echo tran1
+
+    echo ""
 
 suite "Validation":
   test "statechart must have one or more children":

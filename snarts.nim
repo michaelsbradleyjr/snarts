@@ -59,6 +59,23 @@ func initParallel*[St: enum; Ev: enum; Dm: object; Em: object](
     pId: pId,
     pChildren: @pChildren)
 
+func initTransition*[St: enum; Ev: enum; Dm: object; Em: object](
+    tEvent: Opt[Ev] = Opt.none Ev,
+    tCond: Opt[Cond] = Opt.none Cond,
+    tTarget: Opt[St] = Opt.none St,
+    tKind: TransitionKind = tkExternal,
+    tExe: Opt[Exe] = Opt.none Exe):
+      StatechartNode[St, Ev, Dm, Em] =
+  enforce(Dm, St, "id")
+  enforce(Em, Ev, "name")
+  StatechartNode[St, Ev, Dm, Em](
+    kind: snkTransition,
+    tEvent: tEvent,
+    tCond: tCond,
+    tTarget: tTarget,
+    tKind: tKind,
+    tExe: tExe)
+
 macro fixup(St, Ev, Dm, Em, children: untyped): auto =
   # if possible, fixup should only attempt to modify calls that are calls to
   # the macros defined in this module
