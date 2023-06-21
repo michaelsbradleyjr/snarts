@@ -1,6 +1,9 @@
 import pkg/snarts
 import pkg/unittest2
 
+# in tests `let` is preferred to `const` because the latter does not generate
+# coverate data
+
 suite "Templates":
   test "combinations of usage should not cause compile-time errors":
     type
@@ -16,14 +19,13 @@ suite "Templates":
       Event = object
         name: Events
 
-    const
+    let
       state1 = state(States, Events, Data, Event, st1, st2): []
 
       spec1 = statechart(States, Events, Data, Event, "snart1", st1, [])
 
       spec2 = statechart(States, Events, Data, Event, "snart1", st1, @[])
 
-    let
       spec3 = statechart(States, Events, Data, Event, "snart1", st1): []
 
       spec4 = statechart(States, Events, Data, Event, "snart1", st1): @[]
@@ -32,14 +34,12 @@ suite "Templates":
         state1
       ]
 
-    const
       spec6 = statechart(States, Events, Data, Event, "snart1", st1): [
         state1,
         state(States, Events, Data, Event, st1, st2, []),
         state1
       ]
 
-    let
       spec7 = statechart(States, Events, Data, Event, "snart1", st1): [
         state1,
         state(st1, st2, []),
@@ -69,7 +69,7 @@ suite "Templates":
       spec1.Dm is Data
       spec1.Em is Event
 
-    const
+    let
       tran1 = initTransition[States, Events, Data, Event]()
 
     echo ""
