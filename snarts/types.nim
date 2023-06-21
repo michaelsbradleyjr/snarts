@@ -13,11 +13,32 @@
 
 {.push raises: [].}
 
-# import std/[sets, tables]
-import std/sets
+import std/[macros, sets]
 import pkg/stew/results
 
 export results
+
+macro Cond*(): untyped =
+  let
+    cond = genSym(nskProc, "cond")
+    config = ident "config"
+    data = ident "data"
+    event = ident "event"
+  result = quote do:
+    proc `cond`(`data`: Dm, `event`: Em, `config`: Configuration[St]): bool
+      {.nimcall, noSideEffect, raises: [].}
+    typeof(`cond`)
+
+macro Exe*(): untyped =
+  let
+    config = ident "config"
+    data = ident "data"
+    event = ident "event"
+    exe = genSym(nskProc, "exe")
+  result = quote do:
+    proc `exe`(`data`: ref Dm, `event`: Em, `config`: Configuration[St])
+      {.nimcall, noSideEffect, raises: [].}
+    typeof(`exe`)
 
 type
   CompilerError* = object of CatchableError
@@ -92,23 +113,17 @@ type
       pChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
     of snkTransition:
       tEvent*: Opt[Ev]
-      tCond*: Opt[
-        proc(data: Dm, event: Em, config: Configuration[St]): bool
-          {.nimcall, noSideEffect, raises: [].}]
+      tCond*: Opt[Cond]
       tTarget*: Opt[St]
       tKind*: TransitionKind
-      tExe*: Opt[
-        proc(data: ref Dm, event: Em, config: Configuration[St])
-          {.nimcall, noSideEffect, raises: [].}]
+      tExe*: Opt[Exe]
     of snkInitial:
       iChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
     of snkFinal:
       fId*: Opt[St]
       fChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
     of snkOnEntry, snkOnExit:
-      oExe*: (
-        proc(data: ref Dm, event: Em, config: Configuration[St])
-          {.nimcall, noSideEffect, raises: [].})
+      oExe*: Exe()
     of snkHistory:
       hId*: Opt[St]
       hKind*: HistoryKind
