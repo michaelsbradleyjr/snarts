@@ -74,6 +74,57 @@ func initTransition*[St: enum; Ev: enum; Dm: object; Em: object](
     tKind: tKind,
     tExe: tExe)
 
+func initInitial*[St: enum; Ev: enum; Dm: object; Em: object](
+    iChildren: openArray[StatechartNode[St, Ev, Dm, Em]] = []):
+      StatechartNode[St, Ev, Dm, Em] =
+  enforce(Dm, St, "id")
+  enforce(Em, Ev, "name")
+  StatechartNode[St, Ev, Dm, Em](
+    kind: snkInitial,
+    iChildren: @iChildren)
+
+func initFinal*[St: enum; Ev: enum; Dm: object; Em: object](
+    fId: Opt[St] = Opt.none St,
+    fChildren: openArray[StatechartNode[St, Ev, Dm, Em]] = []):
+      StatechartNode[St, Ev, Dm, Em] =
+  enforce(Dm, St, "id")
+  enforce(Em, Ev, "name")
+  StatechartNode[St, Ev, Dm, Em](
+    kind: snkFinal,
+    fId: fId,
+    fChildren: @fChildren)
+
+func initOnEntry*[St: enum; Ev: enum; Dm: object; Em: object](
+    oExe: Exe()):
+      StatechartNode[St, Ev, Dm, Em] =
+  enforce(Dm, St, "id")
+  enforce(Em, Ev, "name")
+  StatechartNode[St, Ev, Dm, Em](
+    kind: snkOnEntry,
+    oExe: oExe)
+
+func initOnExit*[St: enum; Ev: enum; Dm: object; Em: object](
+    oExe: Exe()):
+      StatechartNode[St, Ev, Dm, Em] =
+  enforce(Dm, St, "id")
+  enforce(Em, Ev, "name")
+  StatechartNode[St, Ev, Dm, Em](
+    kind: snkOnExit,
+    oExe: oExe)
+
+func initHistory*[St: enum; Ev: enum; Dm: object; Em: object](
+    hId: Opt[St] = Opt.none St,
+    hKind: HistoryKind = hkShallow,
+    hChildren: openArray[StatechartNode[St, Ev, Dm, Em]] = []):
+      StatechartNode[St, Ev, Dm, Em] =
+  enforce(Dm, St, "id")
+  enforce(Em, Ev, "name")
+  StatechartNode[St, Ev, Dm, Em](
+    kind: snkHistory,
+    hId: hId,
+    hKind: hKind,
+    hChildren: @hChildren)
+
 macro fixup(St, Ev, Dm, Em, children: untyped): auto =
   # if possible, fixup should only attempt to modify calls that are calls to
   # the macros defined in this module
