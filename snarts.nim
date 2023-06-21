@@ -1,7 +1,6 @@
 {.push raises: [].}
 
-import std/macros
-from std/typetraits import nil
+import std/[macros, strutils, typetraits]
 # import ./snarts/algos
 import ./snarts/types
 
@@ -15,13 +14,12 @@ macro enforce(T1, T2: untyped; fieldName: static string): untyped =
       when compiles(`T1`.`field`):
         if typeof(`T1`.`field`) isnot `T2`:
           raise (ref AssertionDefect)(msg:
-            "field \"" & `fieldName` & "\" of type " & typetraits.name(`T1`) &
-            " is type " & typetraits.name(`T1`.`field`) &
-            " but is required to be type " & typetraits.name(`T2`))
+            "field \"$#\" of type $# is type $# but is required to be type $#" %
+            [`fieldName`, name(`T1`), name(`T1`.`field`), name(`T2`)])
       else:
         raise (ref AssertionDefect)(msg:
-          "type " & typetraits.name(`T1`) & " does not have required field \"" &
-          `fieldName` & "\"")
+          "type $# does not have required field \"$#\"" %
+          [name(`T1`), `fieldName`])
 
 func initStatechart*[St: enum; Ev: enum; Dm: object; Em: object](
     scInitial: Opt[St] = Opt.none St,
