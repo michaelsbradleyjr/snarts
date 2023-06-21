@@ -48,6 +48,17 @@ func initState*[St: enum; Ev: enum; Dm: object; Em: object](
     sInitial: sInitial,
     sChildren: @sChildren)
 
+func initParallel*[St: enum; Ev: enum; Dm: object; Em: object](
+    pId: Opt[St] = Opt.none St,
+    pChildren: openArray[StatechartNode[St, Ev, Dm, Em]] = []):
+      StatechartNode[St, Ev, Dm, Em] =
+  enforce(Dm, St, "id")
+  enforce(Em, Ev, "name")
+  StatechartNode[St, Ev, Dm, Em](
+    kind: snkParallel,
+    pId: pId,
+    pChildren: @pChildren)
+
 macro fixup(St, Ev, Dm, Em, children: untyped): auto =
   # if possible, fixup should only attempt to modify calls that are calls to
   # the macros defined in this module
@@ -56,7 +67,6 @@ macro fixup(St, Ev, Dm, Em, children: untyped): auto =
   # need a macro overload of that name that takes zero arguments, and the call
   # itself would need to be swapped for the non-bare one with `St`, et
   # al. filled in
-
   when defined(debugMacros):
     debugEcho ""
     debugEcho treeRepr St
