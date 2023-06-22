@@ -41,6 +41,12 @@ macro Exe*(): untyped =
     typeof(`exe`)
 
 type
+  # placeholder
+  Actor[St: enum; Ev: enum; Dm: object; Em: object] = object
+
+  ActorRef*[St: enum; Ev: enum; Dm: object; Em: object] =
+    ref Actor[St, Ev, Dm, Em]
+
   CompilerError* = object of CatchableError
     errors*: seq[ValidationError]
     spec*: string
@@ -56,6 +62,10 @@ type
   HistoryKind* = enum
     hkShallow, hkDeep
 
+  InterpreterError* = object of CatchableError
+
+  # !! refactor
+  # -----------
   # Machine*[St: enum; Ev: enum; Dm; Em] = object
   #   configuration*: Configuration[St]
   #   statesToInvoke*: OrderedSet[...]
@@ -64,6 +74,9 @@ type
   #   externalQueue*: seq[Em]
   #   historyValue*: Table[...] # not sure yet about key,value types
   #   running*: bool
+
+  # placeholder
+  Machine*[St: enum; Ev: enum; Dm: object; Em: object] = object
 
   # StateKind* = enum
   #   skState

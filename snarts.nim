@@ -1,11 +1,9 @@
 {.push raises: [].}
 
 import std/[macros, strutils, typetraits]
-# import ./snarts/algos
-import ./snarts/types
+import ./snarts/algos
 
-# export algos, types
-export types
+export algos
 
 macro enforce(T1, T2: untyped; fieldName: static string): untyped =
   let field = ident fieldName
@@ -125,9 +123,9 @@ func initHistory*[St: enum; Ev: enum; Dm: object; Em: object](
     hKind: hKind,
     hChildren: @hChildren)
 
-macro fixup(St, Ev, Dm, Em, children: untyped): auto =
+func fixup(St, Ev, Dm, Em, children: NimNode): NimNode =
   # if possible, fixup should only attempt to modify calls that are calls to
-  # the macros defined in this module
+  # the macros/templates defined in this module
 
   # would be nice if could recognize "bare call" to e.g. `final`, but would
   # need a macro overload of that name that takes zero arguments, and the call
@@ -148,15 +146,18 @@ macro fixup(St, Ev, Dm, Em, children: untyped): auto =
     elif children.kind == nnkStmtList and
          children[0].kind == nnkBracket:
       bracket = children[0]
-    elif children.kind == nnkStmtList and
-         children[0].kind == nnkPrefix and
-         children[0][0] == ident("@") and
-         children[0][1].kind == nnkBracket:
-      bracket = children[0][1]
     elif children.kind == nnkPrefix and
          children[0] == ident("@") and
+         children.len > 1 and
          children[1].kind == nnkBracket:
       bracket = children[1]
+    elif children.kind == nnkStmtList and
+         children[0].kind == nnkPrefix and
+         children[0].len > 0 and
+         children[0][0] == ident("@") and
+         children[0].len > 1 and
+         children[0][1].kind == nnkBracket:
+      bracket = children[0][1]
   for n in bracket:
     if n.kind == nnkCall and n.len < 5:
       n.insert(1, ident $St)
@@ -173,74 +174,166 @@ macro fixup(St, Ev, Dm, Em, children: untyped): auto =
     debugEcho toStrLit result
     debugEcho ""
 
-template statechart*(
-    St, Ev, Dm, Em: typedesc,
-    children: untyped):
-      auto =
-  initStatechart[St, Ev, Dm, Em](
-    scChildren = fixup(St, Ev, Dm, Em, children))
+# template statechart*(
+#     St, Ev, Dm, Em: typedesc,
+#     children: untyped):
+#       auto =
+#   initStatechart[St, Ev, Dm, Em](
+#     scChildren = fixup(St, Ev, Dm, Em, children))
 
-template statechart*(
-    St, Ev, Dm, Em: typedesc,
+# template statechart*(
+#     St, Ev, Dm, Em: typedesc,
+#     name: string,
+#     children: untyped):
+#       auto =
+#   initStatechart[St, Ev, Dm, Em](
+#     scName = (if name == "": Opt.none string else: Opt.some name),
+#     scChildren = fixup(St, Ev, Dm, Em, children))
+
+# template statechart*(
+#     St, Ev, Dm, Em: typedesc,
+#     initial: St,
+#     children: untyped):
+#       auto =
+#   initStatechart[St, Ev, Dm, Em](
+#     scInitial = Opt.some initial,
+#     scChildren = fixup(St, Ev, Dm, Em, children))
+
+# template statechart*(
+#     St, Ev, Dm, Em: typedesc,
+#     name: string,
+#     initial: St,
+#     children: untyped):
+#       auto =
+#   initStatechart[St, Ev, Dm, Em](
+#     scInitial = Opt.some initial,
+#     scName = (if name == "": Opt.none string else: Opt.some name),
+#     scChildren = fixup(St, Ev, Dm, Em, children))
+
+macro statechart3[S: enum](
+    St: typedesc[S]; Ev, Dm, Em: typedesc,
     name: string,
+    initial: S,
     children: untyped):
-      auto =
-  initStatechart[St, Ev, Dm, Em](
-    scName = (if name == "": Opt.none string else: Opt.some name),
-    scChildren = fixup(St, Ev, Dm, Em, children))
+      untyped =
+  let scChildren = fixup(St, Ev, Dm, Em, children)
+  result = quote do:
+    initStatechart[`St`, `Ev`, `Dm`, `Em`](
+      scInitial = Opt.some `initial`,
+      scName = (if `name` == "": Opt.none string else: Opt.some `name`),
+      scChildren = `scChildren`)
 
 template statechart*(
-    St, Ev, Dm, Em: typedesc,
-    initial: St,
+    St, Ev, Dm, Em: untyped,
+    name: untyped,
+    initial: untyped,
     children: untyped):
-      auto =
-  initStatechart[St, Ev, Dm, Em](
-    scInitial = Opt.some initial,
-    scChildren = fixup(St, Ev, Dm, Em, children))
+      untyped =
+  statechart3(St, Ev, Dm, Em, name, initial, children)
 
-template statechart*(
-    St, Ev, Dm, Em: typedesc,
-    name: string,
-    initial: St,
-    children: untyped):
-      auto =
-  initStatechart[St, Ev, Dm, Em](
-    scInitial = Opt.some initial,
-    scName = (if name == "": Opt.none string else: Opt.some name),
-    scChildren = fixup(St, Ev, Dm, Em, children))
+# template anon*(
+#     St, Ev, Dm, Em: typedesc,
+#     children: untyped):
+#       auto =
+#   initState[St, Ev, Dm, Em](
+#     sChildren = fixup(St, Ev, Dm, Em, children))
 
-template anon*(
-    St, Ev, Dm, Em: typedesc,
-    children: untyped):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sChildren = fixup(St, Ev, Dm, Em, children))
+# template anon*(
+#     St, Ev, Dm, Em: typedesc,
+#     initial: St,
+#     children: untyped):
+#       auto =
+#   initState[St, Ev, Dm, Em](
+#     sInitial = Opt.some initial,
+#     sChildren = fixup(St, Ev, Dm, Em, children))
 
-template anon*(
-    St, Ev, Dm, Em: typedesc,
-    initial: St,
+# template state*(
+#     St, Ev, Dm, Em: typedesc,
+#     id: St,
+#     children: untyped):
+#       auto =
+#   initState[St, Ev, Dm, Em](
+#     sId = Opt.some id,
+#     sChildren = fixup(St, Ev, Dm, Em, children))
+
+macro state2[S: enum](
+    St: typedesc[S]; Ev, Dm, Em: typedesc,
+    id: S,
     children: untyped):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sInitial = Opt.some initial,
-    sChildren = fixup(St, Ev, Dm, Em, children))
+      untyped =
+  let sChildren = fixup(St, Ev, Dm, Em, children)
+  result = quote do:
+    initState[`St`, `Ev`, `Dm`, `Em`](
+      sId = Opt.some `id`,
+      sChildren = `sChildren`)
 
 template state*(
-    St, Ev, Dm, Em: typedesc,
-    id: St,
+    St, Ev, Dm, Em: untyped,
+    id: untyped,
     children: untyped):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sId = Opt.some id,
-    sChildren = fixup(St, Ev, Dm, Em, children))
+      untyped =
+  state2(St, Ev, Dm, Em, id, children)
+
+# template state*(
+#     St, Ev, Dm, Em: typedesc,
+#     id: St,
+#     initial: St,
+#     children: untyped):
+#       auto =
+#   initState[St, Ev, Dm, Em](
+#     sId = Opt.some id,
+#     sInitial = Opt.some initial,
+#     sChildren = fixup(St, Ev, Dm, Em, children))
+
+macro state3[S: enum](
+    St: typedesc[S]; Ev, Dm, Em: typedesc,
+    id: S,
+    initial: S,
+    children: untyped):
+      untyped =
+  let sChildren = fixup(St, Ev, Dm, Em, children)
+  result = quote do:
+    initState[`St`, `Ev`, `Dm`, `Em`](
+      sId = Opt.some `id`,
+      sInitial = Opt.some `initial`,
+      sChildren = `sChildren`)
 
 template state*(
-    St, Ev, Dm, Em: typedesc,
-    id: St,
-    initial: St,
+    St, Ev, Dm, Em: untyped,
+    id: untyped,
+    initial: untyped,
     children: untyped):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sId = Opt.some id,
-    sInitial = Opt.some initial,
-    sChildren = fixup(St, Ev, Dm, Em, children))
+      untyped =
+  state3(St, Ev, Dm, Em, id, initial, children)
+
+# out of order re: arity, just trying to get code in snart1 example "working"
+# ---------------------------------------------------------------------------
+
+# need variations of transition macros that allow for cond and/or exe to be
+# untyped or concrete Cond/Exe
+
+# template transition*(
+#     St, Ev, Dm, Em: typedesc,
+#     event: Ev,
+#     target: St):
+#       untyped =
+#   initTransition[St, Ev, Dm, Em](
+#     tEvent = Opt.some event,
+#     tTarget = Opt.some target)
+
+macro transition2[S: enum; E: enum](
+    St: typedesc[S]; Ev: typedesc[E]; Dm, Em: typedesc,
+    event: E,
+    target: S):
+      untyped =
+  result = quote do:
+    initTransition[`St`, `Ev`, `Dm`, `Em`](
+      tEvent = Opt.some `event`,
+      tTarget = Opt.some `target`)
+
+template transition*(
+    St, Ev, Dm, Em: untyped,
+    event: untyped,
+    target: untyped):
+      untyped =
+  transition2(St, Ev, Dm, Em, event, target)

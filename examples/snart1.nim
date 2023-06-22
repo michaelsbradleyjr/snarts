@@ -18,27 +18,32 @@ type
 const # or: let
   spec = statechart(
     States, Events, Data, Event,
-    # id = "snart1",
-    # initial = inactive
     "snart1",
-    inactive
+    initial = inactive
   ):[
     state(active, [
-      # transition(toggle, inactive)
+      transition(toggle, inactive)
     ]),
     state(inactive, [
-      # transition(toggle, active)
+      transition(toggle, active)
     ])
   ]
 
-  # machine = spec.compile
+  machine = spec.compile.expect("failure not expected")
 
 echo ""
 echo spec
 echo ""
+echo machine
 
-# let actor = machine.start
-#
+let actor = machine.start.expect("failure not expected")
+
+echo ""
+echo actor[]
+
+# !! demo with transition exe that debugEchos config instead of echoing
+#    actor.config
+# ---------------------------------------------------------------------
 # actor.send Event(name: toggle)
 #
 # echo actor.config
@@ -48,5 +53,5 @@ echo ""
 #
 # echo actor.config
 # => {inactive}
-#
-# actor.stop
+
+actor.stop.expect("failure not expected")
