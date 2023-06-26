@@ -124,13 +124,6 @@ func initHistory*[St: enum; Ev: enum; Dm: object; Em: object](
     hChildren: @hChildren)
 
 func fixup(St, Ev, Dm, Em, children: NimNode): NimNode =
-  # if possible, fixup should only attempt to modify calls that are calls to
-  # the macros/templates defined in this module
-
-  # would be nice if could recognize "bare call" to e.g. `final`, but would
-  # need a macro overload of that name that takes zero arguments, and the call
-  # itself would need to be swapped for the non-bare one with `St`, et
-  # al. filled in
   when defined(debugMacros):
     debugEcho ""
     debugEcho treeRepr St
@@ -158,12 +151,31 @@ func fixup(St, Ev, Dm, Em, children: NimNode): NimNode =
          children[0].len > 1 and
          children[0][1].kind == nnkBracket:
       bracket = children[0][1]
-  for n in bracket:
-    if n.kind == nnkCall and n.len < 5:
-      n.insert(1, ident $St)
-      n.insert(2, ident $Ev)
-      n.insert(3, ident $Dm)
-      n.insert(4, ident $Em)
+  for i, node in bracket:
+    if (node.kind == nnkIdent) and
+       ($node in ["state", "anon"]):
+      let fixedup = newCall(
+        node,
+        ident $St, ident $Ev, ident $Dm, ident $Em)
+      bracket[i] = quote do:
+        when compiles(`fixedup`):
+          `fixedup`
+        else:
+          `node`
+    elif (node.kind == nnkCall) and
+         (node.len > 0) and
+         ($node[0] in ["state", "anon"]) and
+         (node.len < 5):
+      let fixedup = node.copy
+      fixedup.insert(1, ident $St)
+      fixedup.insert(2, ident $Ev)
+      fixedup.insert(3, ident $Dm)
+      fixedup.insert(4, ident $Em)
+      bracket[i] = quote do:
+        when compiles(`fixedup`):
+          `fixedup`
+        else:
+          `node`
   when defined(debugMacros):
     debugEcho ""
     debugEcho treeRepr children
@@ -174,8 +186,19 @@ func fixup(St, Ev, Dm, Em, children: NimNode): NimNode =
     debugEcho toStrLit result
     debugEcho ""
 
+macro statechart0(
+    St, Ev, Dm, Em: untyped):
+      untyped =
+  result = quote do:
+    initStatechart[`St`, `Ev`, `Dm`, `Em`]()
+
+template statechart*(
+    St, Ev, Dm, Em: untyped):
+      untyped =
+  statechart0(St, Ev, Dm, Em)
+
 macro statechart1(
-    St, Ev, Dm, Em: typedesc,
+    St, Ev, Dm, Em: untyped,
     children: untyped):
       untyped =
   let scChildren = fixup(St, Ev, Dm, Em, children)
@@ -190,7 +213,7 @@ template statechart*(
   statechart1(St, Ev, Dm, Em, children)
 
 macro statechart2a(
-    St, Ev, Dm, Em: typedesc,
+    St, Ev, Dm, Em: untyped,
     name: untyped,
     children: untyped):
       untyped =
@@ -208,7 +231,7 @@ template statechart*(
   statechart2a(St, Ev, Dm, Em, name, children)
 
 macro statechart2b(
-    St, Ev, Dm, Em: typedesc,
+    St, Ev, Dm, Em: untyped,
     initial: untyped,
     children: untyped):
       untyped =
@@ -226,7 +249,7 @@ template statechart*(
   statechart2b(St, Ev, Dm, Em, initial, children)
 
 macro statechart3(
-    St, Ev, Dm, Em: typedesc,
+    St, Ev, Dm, Em: untyped,
     name: untyped,
     initial: untyped,
     children: untyped):
@@ -246,8 +269,12 @@ template statechart*(
       untyped =
   statechart3(St, Ev, Dm, Em, name, initial, children)
 
+template anon*(): untyped = 0
+
+template state*(): untyped = 0
+
 macro state0(
-    St, Ev, Dm, Em: typedesc):
+    St, Ev, Dm, Em: untyped):
       untyped =
   result = quote do:
     initState[`St`, `Ev`, `Dm`, `Em`]()
@@ -261,6 +288,9 @@ template state*(
     St, Ev, Dm, Em: untyped):
       untyped =
   state0(St, Ev, Dm, Em)
+
+# ^ working
+# ------------------------------------------------------------------------------
 
 macro state1a[S: enum](
     St: typedesc[S]; Ev, Dm, Em: typedesc,
@@ -311,76 +341,102 @@ template state*(
       untyped =
   state1c(St, Ev, Dm, Em, children)
 
-# below probably need some, but enabled so examples/snart1 compiles and runs
-# --------------------------------------------------------------------------
+# work through
+# ------------------------------------------------------------------------------
 
-macro state2[S: enum](
-    St: typedesc[S]; Ev, Dm, Em: typedesc,
-    id: S,
-    children: untyped):
-      untyped =
-  let sChildren = fixup(St, Ev, Dm, Em, children)
-  result = quote do:
-    initState[`St`, `Ev`, `Dm`, `Em`](
-      sId = Opt.some `id`,
-      sChildren = `sChildren`)
+# macro state2a[S: enum](
+#     St: typedesc[S]; Ev, Dm, Em: typedesc,
+#     id: S,
+#     initial: S):
+#       untyped =
+#   result = quote do:
+#     initState[`St`, `Ev`, `Dm`, `Em`](
+#       sId = Opt.some `id`,
+#       sInitial = Opt.some `initial`)
 
-template state*(
-    St, Ev, Dm, Em: untyped,
-    id: untyped,
-    children: untyped):
-      untyped =
-  state2(St, Ev, Dm, Em, id, children)
+# template state*[S: enum](
+#     St: typedesc[S]; Ev, Dm, Em: untyped,
+#     id: S,
+#     initial: S):
+#       untyped =
+#   state2a(St, Ev, Dm, Em, id, initial)
 
-macro state3[S: enum](
-    St: typedesc[S]; Ev, Dm, Em: typedesc,
-    id: S,
-    initial: S,
-    children: untyped):
-      untyped =
-  let sChildren = fixup(St, Ev, Dm, Em, children)
-  result = quote do:
-    initState[`St`, `Ev`, `Dm`, `Em`](
-      sId = Opt.some `id`,
-      sInitial = Opt.some `initial`,
-      sChildren = `sChildren`)
+# macro state2b[S: enum](
+#     St: typedesc[S]; Ev, Dm, Em: typedesc,
+#     id: S,
+#     children: untyped):
+#       untyped =
+#   let sChildren = fixup(St, Ev, Dm, Em, children)
+#   result = quote do:
+#     initState[`St`, `Ev`, `Dm`, `Em`](
+#       sId = Opt.some `id`,
+#       sChildren = `sChildren`)
 
-template state*(
-    St, Ev, Dm, Em: untyped,
-    id: untyped,
-    initial: untyped,
-    children: untyped):
-      untyped =
-  state3(St, Ev, Dm, Em, id, initial, children)
+# template state*[S: enum](
+#     St: typedesc[S]; Ev, Dm, Em: untyped,
+#     id: S,
+#     children: untyped):
+#       untyped =
+#   state2b(St, Ev, Dm, Em, id, children)
 
-# out of order re: arity, just trying to get code in snart1 example "working"
-# ---------------------------------------------------------------------------
+# macro state2c[S: enum](
+#     St: typedesc[S]; Ev, Dm, Em: typedesc,
+#     initial: S,
+#     children: untyped):
+#       untyped =
+#   let sChildren = fixup(St, Ev, Dm, Em, children)
+#   result = quote do:
+#     initState[`St`, `Ev`, `Dm`, `Em`](
+#       sInitial = Opt.some `initial`,
+#       sChildren = `sChildren`)
+
+# template anon*[S: enum](
+#     St: typedesc[S]; Ev, Dm, Em: untyped,
+#     initial: S,
+#     children: untyped):
+#       untyped =
+#   state2c(St, Ev, Dm, Em, initial, children)
+
+# macro state3[S: enum](
+#     St: typedesc[S]; Ev, Dm, Em: typedesc,
+#     id: S,
+#     initial: S,
+#     children: untyped):
+#       untyped =
+#   let sChildren = fixup(St, Ev, Dm, Em, children)
+#   result = quote do:
+#     initState[`St`, `Ev`, `Dm`, `Em`](
+#       sId = Opt.some `id`,
+#       sInitial = Opt.some `initial`,
+#       sChildren = `sChildren`)
+
+# template state*[S: enum](
+#     St: typedesc[S]; Ev, Dm, Em: typedesc,
+#     id: S,
+#     initial: S,
+#     children: untyped):
+#       untyped =
+#   state3(St, Ev, Dm, Em, id, initial, children)
+
+# ------------------------------------------------------------------------------
 
 # need variations of transition macros that allow for cond and/or exe to be
 # untyped or concrete Cond/Exe
 
-template transition*(
-    St, Ev, Dm, Em: typedesc,
-    event: Ev,
-    target: St):
-      untyped =
-  initTransition[St, Ev, Dm, Em](
-    tEvent = Opt.some event,
-    tTarget = Opt.some target)
+# macro transition2[S: enum; E: enum](
+#     St: typedesc[S]; Ev: typedesc[E]; Dm, Em: typedesc,
+#     event: E,
+#     target: S):
+#       untyped =
+#   result = quote do:
+#     initTransition[`St`, `Ev`, `Dm`, `Em`](
+#       tEvent = Opt.some `event`,
+#       tTarget = Opt.some `target`)
 
-macro transition2[S: enum; E: enum](
-    St: typedesc[S]; Ev: typedesc[E]; Dm, Em: typedesc,
-    event: E,
-    target: S):
-      untyped =
-  result = quote do:
-    initTransition[`St`, `Ev`, `Dm`, `Em`](
-      tEvent = Opt.some `event`,
-      tTarget = Opt.some `target`)
-
-template transition*(
-    St, Ev, Dm, Em: untyped,
-    event: untyped,
-    target: untyped):
-      untyped =
-  transition2(St, Ev, Dm, Em, event, target)
+# template transition*[S: enum; E: enum](
+# template transition*(
+#     St, Ev, Dm, Em: typedesc,
+#     event: untyped,
+#     target: untyped):
+#       untyped =
+#   transition2(St, Ev, Dm, Em, event, target)
