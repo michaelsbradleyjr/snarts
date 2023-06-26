@@ -21,12 +21,16 @@ const # or: let
     "snart1",
     initial = inactive
   ):[
-    state(active, [
-      transition(toggle, inactive)
-    ]),
-    state(inactive, [
-      transition(toggle, active)
-    ])
+    # state(active, [
+    #   transition(toggle, inactive)
+    # ]),
+    # state(inactive, [
+    #   transition(toggle, active)
+    # ])
+
+    # make it compile during refactor
+    state,
+    state
   ]
 
   machine = spec.compile.expect("failure not expected")
