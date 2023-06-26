@@ -37,105 +37,326 @@ suite "Templates":
       Event = object
         name: Events
 
-    # rewrite this to be in a `check:` block/s instead of `let`; lhs of `==`
-    # should be the template invocation as below and rhs should be
-    # expected-to-match invocation of `StatechartNode(kind: ..., ...)`
+    # ?? why does the following cause a compile-time error
+    # i.e. when same/similar code below it does not
+    # var chartTest = Statechart[States, Events, Data, Event]()
 
-    var chart = statechart(States, Events, Data, Event)
+    # this works instead...
+    var chartTest =
+      statechart(States, Events, Data, Event)
+
+    let chart0 =
+      Statechart[States, Events, Data, Event]()
 
     check:
       statechart(States, Events, Data, Event) ==
-        Statechart[States, Events, Data, Event]()
+        chart0
+
+    let chart1 =
+      Statechart[States, Events, Data, Event](
+        scChildren: @[])
 
     check:
       statechart(States, Events, Data, Event, []) ==
-        Statechart[States, Events, Data, Event](
-          scChildren: @[])
+        chart1
       statechart(States, Events, Data, Event, children = []) ==
-        Statechart[States, Events, Data, Event](
-          scChildren: @[])
-    chart = statechart(States, Events, Data, Event): []
+        chart1
+    chartTest = statechart(States, Events, Data, Event): []
     check:
-      chart ==
-        Statechart[States, Events, Data, Event](
-          scChildren: @[])
+      chartTest ==
+        chart1
+    check:
+      statechart(States, Events, Data, Event, @[]) ==
+        chart1
+      statechart(States, Events, Data, Event, children = @[]) ==
+        chart1
+    chartTest = statechart(States, Events, Data, Event): @[]
+    check:
+      chartTest ==
+        chart1
+
+    let chart2a =
+      Statechart[States, Events, Data, Event](
+        scName: Opt.some "test",
+        scChildren: @[])
 
     check:
       statechart(States, Events, Data, Event, "test", []) ==
-        Statechart[States, Events, Data, Event](
-          scName: Opt.some "test",
-          scChildren: @[])
+        chart2a
       statechart(States, Events, Data, Event, "test", children = []) ==
-        Statechart[States, Events, Data, Event](
-          scName: Opt.some "test",
-          scChildren: @[])
-    chart = statechart(States, Events, Data, Event, "test"): []
+        chart2a
+    chartTest = statechart(States, Events, Data, Event, "test"): []
     check:
-      chart ==
-        Statechart[States, Events, Data, Event](
-          scName: Opt.some "test",
-          scChildren: @[])
+      chartTest ==
+        chart2a
     check:
       statechart(States, Events, Data, Event, name = "test", []) ==
-        Statechart[States, Events, Data, Event](
-          scName: Opt.some "test",
-          scChildren: @[])
+        chart2a
+    chartTest = statechart(States, Events, Data, Event, name = "test"): []
+    check:
+      chartTest ==
+        chart2a
+    check:
+      statechart(States, Events, Data, Event, name = "test", children = []) ==
+        chart2a
+      statechart(States, Events, Data, Event, children = [], name = "test") ==
+        chart2a
+    check:
+      statechart(States, Events, Data, Event, "test", @[]) ==
+        chart2a
+      statechart(States, Events, Data, Event, "test", children = @[]) ==
+        chart2a
+    chartTest = statechart(States, Events, Data, Event, "test"): @[]
+    check:
+      chartTest ==
+        chart2a
+    check:
+      statechart(States, Events, Data, Event, name = "test", @[]) ==
+        chart2a
+    chartTest = statechart(States, Events, Data, Event, name = "test"): @[]
+    check:
+      chartTest ==
+        chart2a
+    check:
+      statechart(States, Events, Data, Event, name = "test", children = @[]) ==
+        chart2a
+      statechart(States, Events, Data, Event, children = @[], name = "test") ==
+        chart2a
 
-    let
-      # chart0 = statechart(States, Events, Data, Event)
+    let chart2b =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.some st1,
+        scChildren: @[])
 
-      # chart1a = statechart(States, Events, Data, Event, [])
-      # chart1b = statechart(States, Events, Data, Event, children = [])
-      # chart1c = statechart(States, Events, Data, Event): []
+    check:
+      statechart(States, Events, Data, Event, st1, []) ==
+        chart2b
+      statechart(States, Events, Data, Event, st1, children = []) ==
+        chart2b
+    chartTest = statechart(States, Events, Data, Event, st1): []
+    check:
+      chartTest ==
+        chart2b
+    check:
+      statechart(States, Events, Data, Event, initial = st1, []) ==
+        chart2b
+    chartTest = statechart(States, Events, Data, Event, initial = st1): []
+    check:
+      chartTest ==
+        chart2b
+    check:
+      statechart(States, Events, Data, Event, initial = st1, children = []) ==
+        chart2b
+      statechart(States, Events, Data, Event, children = [], initial = st1) ==
+        chart2b
+    check:
+      statechart(States, Events, Data, Event, st1, @[]) ==
+        chart2b
+      statechart(States, Events, Data, Event, st1, children = @[]) ==
+        chart2b
+    chartTest = statechart(States, Events, Data, Event, st1): @[]
+    check:
+      chartTest ==
+        chart2b
+    check:
+      statechart(States, Events, Data, Event, initial = st1, @[]) ==
+        chart2b
+    chartTest = statechart(States, Events, Data, Event, initial = st1): @[]
+    check:
+      chartTest ==
+        chart2b
+    check:
+      statechart(States, Events, Data, Event, initial = st1, children = @[]) ==
+        chart2b
+      statechart(States, Events, Data, Event, children = @[], initial = st1) ==
+        chart2b
 
-      # chart2a = statechart(States, Events, Data, Event, "test", [])
-      # chart2b = statechart(States, Events, Data, Event, "test", children = [])
-      # chart2c = statechart(States, Events, Data, Event, "test"): []
-      # chart2d = statechart(States, Events, Data, Event, name = "test", [])
-      chart2e = statechart(States, Events, Data, Event, name = "test", children = [])
-      chart2f = statechart(States, Events, Data, Event, children = [], name = "test")
-      chart2g = statechart(States, Events, Data, Event, name = "test"): []
-      chart2h = statechart(States, Events, Data, Event, st1, [])
-      chart2i = statechart(States, Events, Data, Event, st1, children = [])
-      chart2j = statechart(States, Events, Data, Event, st1): []
-      chart2k = statechart(States, Events, Data, Event, initial = st1, [])
-      chart2l = statechart(States, Events, Data, Event, initial = st1, children = [])
-      chart2m = statechart(States, Events, Data, Event, children = [], initial = st1)
-      chart2n = statechart(States, Events, Data, Event, initial = st1): []
+    let chart3 =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.some st1,
+        scName: Opt.some "test",
+        scChildren: @[])
 
-      chart3a = statechart(States, Events, Data, Event, "test", st1, [])
-      chart3b = statechart(States, Events, Data, Event, "test", st1, children = [])
-      chart3c = statechart(States, Events, Data, Event, "test", st1): []
-      chart3d = statechart(States, Events, Data, Event, name = "test", st1, [])
-      chart3e = statechart(States, Events, Data, Event, name = "test", st1, children = [])
-      chart3f = statechart(States, Events, Data, Event, name = "test", st1): []
-      chart3g = statechart(States, Events, Data, Event, "test", initial = st1, [])
-      chart3h = statechart(States, Events, Data, Event, "test", initial = st1, children = [])
-      chart3i = statechart(States, Events, Data, Event, "test", children = [], initial = st1)
-      chart3j = statechart(States, Events, Data, Event, "test", initial = st1): []
-      chart3k = statechart(States, Events, Data, Event, name = "test", initial = st1, [])
-      chart3l = statechart(States, Events, Data, Event, name = "test", initial = st1, children = [])
-      chart3m = statechart(States, Events, Data, Event, name = "test", children = [], initial = st1)
-      chart3n = statechart(States, Events, Data, Event, initial = st1, name = "test", children = [])
-      chart3o = statechart(States, Events, Data, Event, initial = st1, children = [], name = "test")
-      chart3p = statechart(States, Events, Data, Event, children = [], name = "test", initial = st1)
-      chart3q = statechart(States, Events, Data, Event, children = [], initial = st1, name = "test")
-      chart3r = statechart(States, Events, Data, Event, name = "test", initial = st1): []
+    check:
+      statechart(States, Events, Data, Event, "test", st1, []) ==
+        chart3
+      statechart(States, Events, Data, Event, "test", st1, children = []) ==
+        chart3
+    chartTest = statechart(States, Events, Data, Event, "test", st1): []
+    check:
+      chartTest ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, name = "test", st1, []) ==
+        chart3
+      statechart(States, Events, Data, Event, name = "test", st1, children = []) ==
+        chart3
+    chartTest = statechart(States, Events, Data, Event, name = "test", st1): []
+    check:
+      chartTest ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, "test", initial = st1, []) ==
+        chart3
+    chartTest = statechart(States, Events, Data, Event, "test", initial = st1): []
+    check:
+      chartTest ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, "test", initial = st1, children = []) ==
+        chart3
+      statechart(States, Events, Data, Event, "test", children = [], initial = st1) ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, name = "test", initial = st1, []) ==
+        chart3
+    chartTest = statechart(States, Events, Data, Event, name = "test", initial = st1): []
+    check:
+      chartTest ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, name = "test", initial = st1, children = []) ==
+        chart3
+      statechart(States, Events, Data, Event, name = "test", children = [], initial = st1) ==
+        chart3
+      statechart(States, Events, Data, Event, initial = st1, name = "test", children = []) ==
+        chart3
+      statechart(States, Events, Data, Event, initial = st1, children = [], name = "test") ==
+        chart3
+      statechart(States, Events, Data, Event, children = [], name = "test", initial = st1) ==
+        chart3
+      statechart(States, Events, Data, Event, children = [], initial = st1, name = "test") ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, "test", st1, @[]) ==
+        chart3
+      statechart(States, Events, Data, Event, "test", st1, children = @[]) ==
+        chart3
+    chartTest = statechart(States, Events, Data, Event, "test", st1): @[]
+    check:
+      chartTest ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, name = "test", st1, @[]) ==
+        chart3
+      statechart(States, Events, Data, Event, name = "test", st1, children = @[]) ==
+        chart3
+    chartTest = statechart(States, Events, Data, Event, name = "test", st1): @[]
+    check:
+      chartTest ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, "test", initial = st1, @[]) ==
+        chart3
+    chartTest = statechart(States, Events, Data, Event, "test", initial = st1): @[]
+    check:
+      chartTest ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, "test", initial = st1, children = @[]) ==
+        chart3
+      statechart(States, Events, Data, Event, "test", children = @[], initial = st1) ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, name = "test", initial = st1, @[]) ==
+        chart3
+    chartTest = statechart(States, Events, Data, Event, name = "test", initial = st1): @[]
+    check:
+      chartTest ==
+        chart3
+    check:
+      statechart(States, Events, Data, Event, name = "test", initial = st1, children = @[]) ==
+        chart3
+      statechart(States, Events, Data, Event, name = "test", children = @[], initial = st1) ==
+        chart3
+      statechart(States, Events, Data, Event, initial = st1, name = "test", children = @[]) ==
+        chart3
+      statechart(States, Events, Data, Event, initial = st1, children = @[], name = "test") ==
+        chart3
+      statechart(States, Events, Data, Event, children = @[], name = "test", initial = st1) ==
+        chart3
+      statechart(States, Events, Data, Event, children = @[], initial = st1, name = "test") ==
+        chart3
 
-      state0a = state(States, Events, Data, Event)
-      state0b = anon(States, Events, Data, Event)
+    var stateTest =
+      StatechartNode[States, Events, Data, Event](
+        kind: snkState)
 
-    #   state1a = state(States, Events, Data, Event, st1)
-    #   state1b = state(States, Events, Data, Event, id = st1)
-    #   state1c = state(States, Events, Data, Event, [])
-    #   state1d = state(States, Events, Data, Event, children = [])
-    #   state1e = state(States, Events, Data, Event): []
-    #   state1f = anon(States, Events, Data, Event, st1)
-    #   state1g = anon(States, Events, Data, Event, initial = st2)
-    #   state1h = anon(States, Events, Data, Event, [])
-    #   state1i = anon(States, Events, Data, Event, children = [])
-    #   state1j = anon(States, Events, Data, Event): []
+    let state0 =
+      StatechartNode[States, Events, Data, Event](
+        kind: snkState)
 
+    check:
+      state(States, Events, Data, Event) ==
+        state0
+      anon(States, Events, Data, Event) ==
+        state0
+
+    let state1a =
+      StatechartNode[States, Events, Data, Event](
+        kind: snkState,
+        sId: Opt.some st1)
+
+    check:
+      state(States, Events, Data, Event, st1) ==
+        state1a
+      state(States, Events, Data, Event, id = st1) ==
+        state1a
+
+    let state1b =
+      StatechartNode[States, Events, Data, Event](
+        kind: snkState,
+        sInitial: Opt.some st1)
+
+    check:
+      anon(States, Events, Data, Event, st1) ==
+        state1b
+      anon(States, Events, Data, Event, initial = st1) ==
+        state1b
+
+    let state1c =
+      StatechartNode[States, Events, Data, Event](
+        kind: snkState,
+        sChildren: @[])
+
+    check:
+      state(States, Events, Data, Event, []) ==
+        state1c
+      state(States, Events, Data, Event, children = []) ==
+        state1c
+    stateTest = state(States, Events, Data, Event): []
+    check:
+      stateTest ==
+        state1c
+    check:
+      anon(States, Events, Data, Event, []) ==
+        state1c
+      anon(States, Events, Data, Event, children = []) ==
+        state1c
+    stateTest = anon(States, Events, Data, Event): []
+    check:
+      stateTest ==
+        state1c
+    check:
+      state(States, Events, Data, Event, @[]) ==
+        state1c
+      state(States, Events, Data, Event, children = @[]) ==
+        state1c
+    stateTest = state(States, Events, Data, Event): @[]
+    check:
+      stateTest ==
+        state1c
+    check:
+      anon(States, Events, Data, Event, @[]) ==
+        state1c
+      anon(States, Events, Data, Event, children = @[]) ==
+        state1c
+    stateTest = anon(States, Events, Data, Event): @[]
+    check:
+      stateTest ==
+        state1c
+
+    # let
     #   state2a = state(States, Events, Data, Event, st1, st2)
     #   state2b = state(States, Events, Data, Event, id = st1, st2)
     #   state2c = state(States, Events, Data, Event, id = st1, initial = st2)
@@ -176,91 +397,105 @@ suite "Templates":
 
     # --------------------------------------------------------------------------
 
-    # do the following after all the variations for state, parallel,
-    # etc. (though should probably be replaced with a fully macro-ized
-    # randomized setup)
+    # do the following after all the variations for state, parallel, etc. are
+    # worked out (though should probably be replaced with fully macro-ized
+    # randomized iterations for all variations)
 
     # for now can work out issues when fixup is in play for state in statechart
 
-    proc statePa(x: int): StatechartNode[States, Events, Data, Event] =
+    # ?? maybe might work if defined outside the suite/test
+    proc state0P(x: int): StatechartNode[States, Events, Data, Event] =
+      state(States, Events, Data, Event)
+
+    template state0T(x: untyped): untyped =
       state(States, Events, Data, Event)
 
     let
-      stateVa = state(States, Events, Data, Event)
+      state0V = state(States, Events, Data, Event)
 
     let
       spec1 = statechart(States, Events, Data, Event, [
-        state
-      ])
-
-    check:
-      spec1 == Statechart[States, Events, Data, Event](
-        scChildren: @[StatechartNode[States, Events, Data, Event](
-          kind: snkState, sChildren: @[])])
-
-    let
-      spec2 = statechart(States, Events, Data, Event, [
-        # `snarts.state()` doesn't work, need to understand better 0 and 1+ arg
-        # forms of DotExpr:
-        # -----------------------------------------------------------------
+        # `snarts.anon|state()` doesn't work, need to understand better 0 and
+        # 1+ arg forms of DotExpr:
+        # -------------------------------------------------------------------
         # Bracket
         #   Call
         #     DotExpr
         #       Ident "snarts"
         #       Ident "state"
-        state()
+        anon(),
+        state(),
+
+        # want to explore this in relation to outerscope having `state` (or
+        # `anon`, etc.) that's a proc and in collision with `snarts.state`, but
+        # see comments above re: DotExpr
+        # state0T(123),
+
+        # want to explore this in relation to outerscope having `state` (or
+        # `anon`, etc.) that's a value and in collision with `snarts.state`,
+        # but see comments above re: DotExpr
+        # state0V
+      ])
+
+    check:
+      spec1 == Statechart[States, Events, Data, Event](
+        scChildren: @[
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sChildren: @[]),
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sChildren: @[]),
+          StatechartNode[States, Events, Data, Event](
+            kind: snkState,
+            sChildren: @[]),
+          StatechartNode[States, Events, Data, Event](
+            kind: snkState,
+            sChildren: @[])])
+
+    let
+      spec2 = statechart(States, Events, Data, Event, [
+        state(st1),
+        anon(st2),
+        anon([]),
+        state([]),
+        anon(@[]),
+        state(@[]),
+        # state0T(123),
+        # state0V
       ])
 
     check:
       spec2 == Statechart[States, Events, Data, Event](
-        scChildren: @[StatechartNode[States, Events, Data, Event](
-          kind: snkState, sChildren: @[])])
-
-    let
-      spec3 = statechart(States, Events, Data, Event, [
-        anon
-      ])
-
-    check:
-      spec3 == Statechart[States, Events, Data, Event](
-        scChildren: @[StatechartNode[States, Events, Data, Event](
-          kind: snkState, sChildren: @[])])
-
-    let
-      spec4 = statechart(States, Events, Data, Event, [
-        anon()
-      ])
-
-    check:
-      spec4 == Statechart[States, Events, Data, Event](
-        scChildren: @[StatechartNode[States, Events, Data, Event](
-          kind: snkState, sChildren: @[])])
-
-    let
-      spec5 = statechart(States, Events, Data, Event, [
-        # want to explore this in relation to outerscope having `state` (or
-        # `anon`, etc.) that's a proc and in collision with `snarts.state`, but
-        # see comments above re: DotExpr
-        statePa(123)
-      ])
-
-    check:
-      spec5 == Statechart[States, Events, Data, Event](
-        scChildren: @[StatechartNode[States, Events, Data, Event](
-          kind: snkState, sChildren: @[])])
-
-    let
-      spec6 = statechart(States, Events, Data, Event, [
-        # want to explore this in relation to outerscope having `state` (or
-        # `anon`, etc.) that's a value and in collision with `snarts.state`,
-        # but see comments above re: DotExpr
-        stateVa
-      ])
-
-    check:
-      spec6 == Statechart[States, Events, Data, Event](
-        scChildren: @[StatechartNode[States, Events, Data, Event](
-          kind: snkState, sChildren: @[])])
+        scChildren: @[
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sId: Opt.some st1,
+          #   sChildren: @[]),
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sId: Opt.some st1,
+          #   sChildren: @[]),
+          StatechartNode[States, Events, Data, Event](
+            kind: snkState,
+            sId: Opt.some st1,
+            sChildren: @[]),
+          StatechartNode[States, Events, Data, Event](
+            kind: snkState,
+            sInitial: Opt.some st2,
+            sChildren: @[]),
+          StatechartNode[States, Events, Data, Event](
+            kind: snkState,
+            sChildren: @[]),
+          StatechartNode[States, Events, Data, Event](
+            kind: snkState,
+            sChildren: @[]),
+          StatechartNode[States, Events, Data, Event](
+            kind: snkState,
+            sChildren: @[]),
+          StatechartNode[States, Events, Data, Event](
+            kind: snkState,
+            sChildren: @[])])
 
     # --------------------------------------------------------------------------
 

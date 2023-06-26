@@ -152,19 +152,22 @@ func fixup(St, Ev, Dm, Em, children: NimNode): NimNode =
          children[0][1].kind == nnkBracket:
       bracket = children[0][1]
   for i, node in bracket:
-    if (node.kind == nnkIdent) and
-       ($node in ["state", "anon"]):
-      let fixedup = newCall(
-        node,
-        ident $St, ident $Ev, ident $Dm, ident $Em)
-      bracket[i] = quote do:
-        when compiles(`fixedup`):
-          `fixedup`
-        else:
-          `node`
-    elif (node.kind == nnkCall) and
+    # bare `anon`, `state`, et al. can lead to surprises, not supported for now
+    # -------------------------------------------------------------------------
+    # if (node.kind == nnkIdent) and
+    #    ($node in ["anon", "state", ...]):
+    #   let fixedup = newCall(
+    #     node,
+    #     ident $St, ident $Ev, ident $Dm, ident $Em)
+    #   bracket[i] = quote do:
+    #     when compiles(`fixedup`):
+    #       `fixedup`
+    #     else:
+    #       `node`
+    if (node.kind == nnkCall) and
          (node.len > 0) and
-         ($node[0] in ["state", "anon"]) and
+         # expand to include "parallel", et al.
+         ($node[0] in ["anon", "state"]) and
          (node.len < 5):
       let fixedup = node.copy
       fixedup.insert(1, ident $St)
@@ -289,8 +292,9 @@ template state*(
       untyped =
   state0(St, Ev, Dm, Em)
 
-# ^ working
-# ------------------------------------------------------------------------------
+template anon*(x: untyped): untyped = 0
+
+template state*(x: untyped): untyped = 0
 
 macro state1a[S: enum](
     St: typedesc[S]; Ev, Dm, Em: typedesc,
@@ -340,6 +344,9 @@ template state*(
     children: untyped):
       untyped =
   state1c(St, Ev, Dm, Em, children)
+
+# ^ working
+# ------------------------------------------------------------------------------
 
 # work through
 # ------------------------------------------------------------------------------

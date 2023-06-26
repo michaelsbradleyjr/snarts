@@ -29,8 +29,8 @@ const # or: let
     # ])
 
     # make it compile during refactor
-    state,
-    state
+    state(),
+    state()
   ]
 
   machine = spec.compile.expect("failure not expected")
