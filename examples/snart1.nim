@@ -44,6 +44,7 @@ let actor = machine.start.expect("failure not expected")
 
 echo ""
 echo actor[]
+echo ""
 
 # !! demo with transition exe that debugEchos config instead of echoing
 #    actor.config

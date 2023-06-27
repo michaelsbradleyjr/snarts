@@ -404,14 +404,22 @@ suite "Templates":
     # for now can work out issues when fixup is in play for state in statechart
 
     # ?? maybe might work if defined outside the suite/test
-    proc state0P(x: int): StatechartNode[States, Events, Data, Event] =
-      state(States, Events, Data, Event)
+    # !! realized the problem: when using only a mix of the `= 0` templates all
+    #    members of the collection have the same type, but when mixing in
+    #    another proc/template call where the return type is
+    #    StatechartNode[...] then the compiler raises an exception... is there
+    #    some way to defer analysis of the collection ??
+    # proc state0P(x: int): StatechartNode[States, Events, Data, Event] =
+    #   state(States, Events, Data, Event)
 
-    template state0T(x: untyped): untyped =
-      state(States, Events, Data, Event)
+    # template state0T(x: untyped): untyped =
+    #   state(States, Events, Data, Event)
 
-    let
-      state0V = state(States, Events, Data, Event)
+    # let
+    #   state0V = state(States, Events, Data, Event)
+
+    # maybe try varargs[untyped] though I'm thinking it may not make a
+    # difference with the untyped-overload problem I seem to be having
 
     let
       spec1 = statechart(States, Events, Data, Event, [
@@ -423,8 +431,11 @@ suite "Templates":
         #     DotExpr
         #       Ident "snarts"
         #       Ident "state"
-        anon(),
-        state(),
+        # anon(),
+        # state(),
+
+        # this doesn't work either, see !! comment above
+        # state(States, Events, Data, Event)
 
         # want to explore this in relation to outerscope having `state` (or
         # `anon`, etc.) that's a proc and in collision with `snarts.state`, but
@@ -446,21 +457,22 @@ suite "Templates":
           # StatechartNode[States, Events, Data, Event](
           #   kind: snkState,
           #   sChildren: @[]),
-          StatechartNode[States, Events, Data, Event](
-            kind: snkState,
-            sChildren: @[]),
-          StatechartNode[States, Events, Data, Event](
-            kind: snkState,
-            sChildren: @[])])
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sChildren: @[]),
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sChildren: @[])
+      ])
 
     let
       spec2 = statechart(States, Events, Data, Event, [
-        state(st1),
-        anon(st2),
-        anon([]),
-        state([]),
-        anon(@[]),
-        state(@[]),
+        # state(st1),
+        # anon(st2),
+        # anon([]),
+        # state([]),
+        # anon(@[]),
+        # state(@[]),
         # state0T(123),
         # state0V
       ])
@@ -476,26 +488,27 @@ suite "Templates":
           #   kind: snkState,
           #   sId: Opt.some st1,
           #   sChildren: @[]),
-          StatechartNode[States, Events, Data, Event](
-            kind: snkState,
-            sId: Opt.some st1,
-            sChildren: @[]),
-          StatechartNode[States, Events, Data, Event](
-            kind: snkState,
-            sInitial: Opt.some st2,
-            sChildren: @[]),
-          StatechartNode[States, Events, Data, Event](
-            kind: snkState,
-            sChildren: @[]),
-          StatechartNode[States, Events, Data, Event](
-            kind: snkState,
-            sChildren: @[]),
-          StatechartNode[States, Events, Data, Event](
-            kind: snkState,
-            sChildren: @[]),
-          StatechartNode[States, Events, Data, Event](
-            kind: snkState,
-            sChildren: @[])])
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sId: Opt.some st1,
+          #   sChildren: @[]),
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sInitial: Opt.some st2,
+          #   sChildren: @[]),
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sChildren: @[]),
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sChildren: @[]),
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sChildren: @[]),
+          # StatechartNode[States, Events, Data, Event](
+          #   kind: snkState,
+          #   sChildren: @[])
+        ])
 
     # --------------------------------------------------------------------------
 
