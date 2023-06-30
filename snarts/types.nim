@@ -50,6 +50,8 @@ type
   CompilerError* = object of CatchableError
     errors*: seq[ValidationError]
     spec*: string
+    # or: object, object, enum, enum for types below; the downstream logic (for
+    # raising ValidationDefect) could then handle stringification
     dataModel*: string
     eventModel*: string
     events*: string
@@ -66,7 +68,7 @@ type
 
   # !! refactor
   # -----------
-  # Machine*[St: enum; Ev: enum; Dm; Em] = object
+  # Machine*[St: enum; Ev: enum; Dm: object; Em: object] = object
   #   configuration*: Configuration[St]
   #   statesToInvoke*: OrderedSet[...]
   #   data*: T
