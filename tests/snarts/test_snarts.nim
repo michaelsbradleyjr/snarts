@@ -37,65 +37,70 @@ suite "DSL":
       Event = object
         name: Events
 
-    let chart0 =
-      statechart[States, Events, Data, Event]()
 
-    let chart1 =
-      statechart[States, Events, Data, Event]([])
 
-    let state0 =
-      state[States, Events, Data, Event]()
+    # newer old stuff
+    # --------------------------------------------------------------------------
 
-    let state1 =
-      state[States, Events, Data, Event]([])
+    # let chart0 =
+    #   statechart[States, Events, Data, Event]()
 
-    debugEcho ""
-    debugEcho $chart0.St
-    debugEcho $chart0.Ev
-    debugEcho $chart0.Dm
-    debugEcho $chart0.Em
+    # let chart1 =
+    #   statechart[States, Events, Data, Event]([])
 
-    debugEcho ""
-    debugEcho chart0
-    debugEcho ""
-    debugEcho chart1
+    # let state0 =
+    #   state[States, Events, Data, Event]()
 
-    debugEcho ""
-    debugEcho state0
-    debugEcho ""
-    debugEcho state1
+    # let state1 =
+    #   state[States, Events, Data, Event]([])
 
-    let chart2 =
-      statechart[States, Events, Data, Event](
-        fixup(States, Events, Data, Event, [
-          state([
-            state[States, Events, Data, Event]()
-          ]),
-          state([
-            state[States, Events, Data, Event]()
-          ]),
-          state()
-        ])
-      )
+    # debugEcho ""
+    # debugEcho $chart0.St
+    # debugEcho $chart0.Ev
+    # debugEcho $chart0.Dm
+    # debugEcho $chart0.Em
 
-    let chart3 =
-      statechart3(States, Events, Data, Event, "grimmy", st2, @[
-        state[States, Events, Data, Event]([
-          state[States, Events, Data, Event]()
-        ]),
-        state([
-          state[States, Events, Data, Event]()
-        ]),
-        state([
-          state[States, Events, Data, Event]()
-        ]),
-        state([
-          state[States, Events, Data, Event]()
-        ]),
-        state[States, Events, Data, Event](st1, st2),
-        state(),
-        state(st1, st2)
-      ])
+    # debugEcho ""
+    # debugEcho chart0
+    # debugEcho ""
+    # debugEcho chart1
+
+    # debugEcho ""
+    # debugEcho state0
+    # debugEcho ""
+    # debugEcho state1
+
+    # let chart2 =
+    #   statechart[States, Events, Data, Event](
+    #     fixup(States, Events, Data, Event, [
+    #       state([
+    #         state[States, Events, Data, Event]()
+    #       ]),
+    #       state([
+    #         state[States, Events, Data, Event]()
+    #       ]),
+    #       state()
+    #     ])
+    #   )
+
+    # let chart3 =
+    #   statechart3(States, Events, Data, Event, "grimmy", st2, @[
+    #     state[States, Events, Data, Event]([
+    #       state[States, Events, Data, Event]()
+    #     ]),
+    #     state([
+    #       state[States, Events, Data, Event]()
+    #     ]),
+    #     state([
+    #       state[States, Events, Data, Event]()
+    #     ]),
+    #     state([
+    #       state[States, Events, Data, Event]()
+    #     ]),
+    #     state[States, Events, Data, Event](st1, st2),
+    #     state(),
+    #     state(st1, st2)
+    #   ])
 
     # was/am having a problem with non-bracketed varargs
     # --------------------------------------------------
@@ -109,14 +114,14 @@ suite "DSL":
     #     )
     #   )
 
-    debugEcho ""
-    debugEcho chart2
-    debugEcho ""
-    debugEcho chart3
+    # debugEcho ""
+    # debugEcho chart2
+    # debugEcho ""
+    # debugEcho chart3
     # debugEcho ""
     # debugEcho chart4
 
-    debugEcho ""
+    # debugEcho ""
 
 
 
