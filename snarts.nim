@@ -5,8 +5,7 @@ import ./snarts/algos
 
 export algos
 
-# try making T1, T2: typedesc instead of untyped
-macro enforce(T1, T2: untyped; fieldName: static string): untyped =
+macro enforce(T1, T2: typedesc; fieldName: static string): untyped =
   let field = ident fieldName
   result = quote do:
     static:
