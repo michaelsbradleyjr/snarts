@@ -123,29 +123,29 @@ func initHistory*[St: enum; Ev: enum; Dm: object; Em: object](
     hKind: hKind,
     hChildren: @hChildren)
 
-func statechart*[St: enum; Ev: enum; Dm: object; Em: object]():
+func statechart0*[St: enum; Ev: enum; Dm: object; Em: object]():
       auto =
   initStatechart[St, Ev, Dm, Em]()
 
-func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
+func statechart1*[St: enum; Ev: enum; Dm: object; Em: object](
     name: string):
       auto =
   initStatechart[St, Ev, Dm, Em](
     scName = (if name == "": Opt.none string else: Opt.some name))
 
-func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
+func statechart1*[St: enum; Ev: enum; Dm: object; Em: object](
     initial: St):
       auto =
   initStatechart[St, Ev, Dm, Em](
     scInitial = Opt.some initial)
 
-func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
+func statechart1*[St: enum; Ev: enum; Dm: object; Em: object](
     children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
   initStatechart[St, Ev, Dm, Em](
     scChildren = children)
 
-func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
+func statechart2*[St: enum; Ev: enum; Dm: object; Em: object](
     name: string,
     initial: St):
       auto =
@@ -153,7 +153,7 @@ func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
     scInitial = Opt.some initial,
     scName = (if name == "": Opt.none string else: Opt.some name))
 
-func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
+func statechart2*[St: enum; Ev: enum; Dm: object; Em: object](
   name: string,
   children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
@@ -161,7 +161,7 @@ func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
     scName = (if name == "": Opt.none string else: Opt.some name),
     scChildren = children)
 
-func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
+func statechart2*[St: enum; Ev: enum; Dm: object; Em: object](
   initial: St,
   children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
@@ -169,7 +169,7 @@ func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
     scInitial = Opt.some initial,
     scChildren = children)
 
-func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
+func statechart3*[St: enum; Ev: enum; Dm: object; Em: object](
   name: string,
   initial: St,
   children: openArray[StatechartNode[St, Ev, Dm, Em]]):
@@ -179,31 +179,31 @@ func statechart*[St: enum; Ev: enum; Dm: object; Em: object](
     scName = (if name == "": Opt.none string else: Opt.some name),
     scChildren = children)
 
-func state*[St: enum; Ev: enum; Dm: object; Em: object](): auto =
+func state0*[St: enum; Ev: enum; Dm: object; Em: object](): auto =
   initState[St, Ev, Dm, Em]()
 
-func anon*[St: enum; Ev: enum; Dm: object; Em: object](): auto =
+func anon0*[St: enum; Ev: enum; Dm: object; Em: object](): auto =
   initState[St, Ev, Dm, Em]()
 
-func state*[St: enum; Ev: enum; Dm: object; Em: object](
+func state1*[St: enum; Ev: enum; Dm: object; Em: object](
     id: St):
       auto =
   initState[St, Ev, Dm, Em](
     sId = Opt.some id)
 
-func anon*[St: enum; Ev: enum; Dm: object; Em: object](
+func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
     initial: St):
       auto =
  initState[St, Ev, Dm, Em](
    sInitial = Opt.some initial)
 
-func state*[St: enum; Ev: enum; Dm: object; Em: object](
+func state1*[St: enum; Ev: enum; Dm: object; Em: object](
     children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
   initState[St, Ev, Dm, Em](
     sChildren = children)
 
-func state*[St: enum; Ev: enum; Dm: object; Em: object](
+func state2*[St: enum; Ev: enum; Dm: object; Em: object](
     id: St,
     initial: St):
       auto =
@@ -211,7 +211,7 @@ func state*[St: enum; Ev: enum; Dm: object; Em: object](
     sId = Opt.some id,
     sInitial = Opt.some initial)
 
-func state*[St: enum; Ev: enum; Dm: object; Em: object](
+func state2*[St: enum; Ev: enum; Dm: object; Em: object](
     id: St,
     children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
@@ -219,7 +219,7 @@ func state*[St: enum; Ev: enum; Dm: object; Em: object](
     sId = Opt.some id,
     sChildren = children)
 
-func anon*[St: enum; Ev: enum; Dm: object; Em: object](
+func anon2*[St: enum; Ev: enum; Dm: object; Em: object](
   initial: St,
   children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
@@ -227,7 +227,7 @@ func anon*[St: enum; Ev: enum; Dm: object; Em: object](
     sInitial = Opt.some initial,
     sChildren = children)
 
-func state*[St: enum; Ev: enum; Dm: object; Em: object](
+func state3*[St: enum; Ev: enum; Dm: object; Em: object](
     id: St,
     initial: St,
     children: openArray[StatechartNode[St, Ev, Dm, Em]]):
