@@ -296,45 +296,48 @@ macro fixup*(
     debugEcho toStrLit result
     debugEcho ""
 
-macro statechart1*(
-    St, Ev, Dm, Em: typedesc,
-    children: varargs[untyped]):
-      untyped =
-  result = quote do:
-    statechart[`St`, `Ev`, `Dm`, `Em`](
-      fixup(`St`, `Ev`, `Dm`, `Em`, `children`))
+# newer old stuff
+# ------------------------------------------------------------------------------
 
-macro statechart2*(
-    St, Ev, Dm, Em: typedesc,
-    name: string,
-    children: varargs[untyped]):
-      untyped =
-  result = quote do:
-    statechart[`St`, `Ev`, `Dm`, `Em`](
-      `name`,
-      fixup(`St`, `Ev`, `Dm`, `Em`, `children`))
+# macro statechart1*(
+#     St, Ev, Dm, Em: typedesc,
+#     children: varargs[untyped]):
+#       untyped =
+#   result = quote do:
+#     statechart[`St`, `Ev`, `Dm`, `Em`](
+#       fixup(`St`, `Ev`, `Dm`, `Em`, `children`))
 
-macro statechart2*[S: enum](
-    St, Ev, Dm, Em: typedesc,
-    initial: S,
-    children: varargs[untyped]):
-      untyped =
-  result = quote do:
-    statechart[`St`, `Ev`, `Dm`, `Em`](
-      `initial`,
-      fixup(`St`, `Ev`, `Dm`, `Em`, `children`))
+# macro statechart2*(
+#     St, Ev, Dm, Em: typedesc,
+#     name: string,
+#     children: varargs[untyped]):
+#       untyped =
+#   result = quote do:
+#     statechart[`St`, `Ev`, `Dm`, `Em`](
+#       `name`,
+#       fixup(`St`, `Ev`, `Dm`, `Em`, `children`))
 
-macro statechart3*[S: enum](
-    St, Ev, Dm, Em: typedesc,
-    name: string,
-    initial: S,
-    children: varargs[untyped]):
-      untyped =
-  result = quote do:
-    statechart[`St`, `Ev`, `Dm`, `Em`](
-      `name`,
-      `initial`,
-      fixup(`St`, `Ev`, `Dm`, `Em`, `children`))
+# macro statechart2*[S: enum](
+#     St, Ev, Dm, Em: typedesc,
+#     initial: S,
+#     children: varargs[untyped]):
+#       untyped =
+#   result = quote do:
+#     statechart[`St`, `Ev`, `Dm`, `Em`](
+#       `initial`,
+#       fixup(`St`, `Ev`, `Dm`, `Em`, `children`))
+
+# macro statechart3*[S: enum](
+#     St, Ev, Dm, Em: typedesc,
+#     name: string,
+#     initial: S,
+#     children: varargs[untyped]):
+#       untyped =
+#   result = quote do:
+#     statechart[`St`, `Ev`, `Dm`, `Em`](
+#       `name`,
+#       `initial`,
+#       fixup(`St`, `Ev`, `Dm`, `Em`, `children`))
 
 
 
