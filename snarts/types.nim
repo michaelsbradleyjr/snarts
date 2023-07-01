@@ -52,6 +52,13 @@ type
     spec*: string
     # or: object, object, enum, enum for types below; the downstream logic (for
     # raising ValidationDefect) could then handle stringification
+    # ...bleh, above idea won't work because it's again typedesc as field,
+    # which is problematic; instead remember that desired strings can be derived
+    # from a Statechart instance:
+    #   $chart0.St
+    #   $chart0.Ev
+    #   $chart0.Dm
+    #   $chart0.Em
     dataModel*: string
     eventModel*: string
     events*: string
