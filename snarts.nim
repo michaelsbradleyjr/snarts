@@ -12,11 +12,12 @@ macro enforce(T1, T2: typedesc; fieldName: static string): untyped =
       when compiles(`T1`.`field`):
         if typeof(`T1`.`field`) isnot `T2`:
           raise (ref AssertionDefect)(msg:
-            "field \"$#\" of type $# is type $# but is required to be type $#" %
+            ("""field '$#' of type '$#' is type '$#' but is required """ &
+             """to be type '$#'""") %
             [`fieldName`, name(`T1`), name(`T1`.`field`), name(`T2`)])
       else:
         raise (ref AssertionDefect)(msg:
-          "type $# does not have required field \"$#\"" %
+          """type '$#' does not have required field '$#'""" %
           [name(`T1`), `fieldName`])
 
 func initStatechart*[St: enum; Ev: enum; Dm: object; Em: object](
