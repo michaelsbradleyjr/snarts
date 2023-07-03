@@ -327,7 +327,7 @@ macro statechart*(
   let argsLen = args.len
   when defined(debugMacros):
     debugEcho ""
-    debugEcho "params.len: " & $argsLen
+    debugEcho "args.len: " & $argsLen
     debugEcho ""
     debugEcho treeRepr args
   if argsLen == 0:
