@@ -268,6 +268,16 @@ macro fixup*(
          (children[0].len > 1) and
          (children[0][1].kind == nnkBracket):
       bracket = children[0][1]
+    elif (children[0].kind == nnkExprEqExpr) and
+         (children[0].len > 0) and
+         (children[0][0] == ident "children") and
+         (children[0].len > 1) and
+         (children[0][1].kind == nnkBracket):
+      bracket = newNimNode(kind = nnkBracket)
+      for i, node in children[0][1]:
+        bracket.insert(i, node)
+        children = newNimNode(kind = nnkArgList)
+        children.insert(0, bracket)
     else:
       bracket = newNimNode(kind = nnkBracket)
       for i, node in children:

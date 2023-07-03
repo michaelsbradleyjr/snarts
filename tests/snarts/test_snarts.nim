@@ -86,7 +86,7 @@ suite "DSL front-end":
     let chart1e =
       statechart(
         States, Events, Data, Event,
-        state0[States, Events, Data, Event]())
+        state0())
 
     debugEcho ""
     debugEcho chart1e
@@ -94,7 +94,7 @@ suite "DSL front-end":
     let chart1f =
       statechart(
         States, Events, Data, Event,
-        [state0[States, Events, Data, Event]()])
+        [state0()])
 
     debugEcho ""
     debugEcho chart1f
@@ -102,7 +102,7 @@ suite "DSL front-end":
     let chart1g =
       statechart(
         States, Events, Data, Event,
-        children = [state0[States, Events, Data, Event]()])
+        children = [state0()])
 
     debugEcho ""
     debugEcho chart1g
@@ -183,7 +183,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         "chart2i",
-        state0[States, Events, Data, Event]())
+        state0())
 
     debugEcho ""
     debugEcho chart2i
@@ -191,14 +191,17 @@ suite "DSL front-end":
     let chart2j =
       statechart(
         States, Events, Data, Event,
-        state0[States, Events, Data, Event](),
+        state0(),
         "chart2j")
+
+    debugEcho ""
+    debugEcho chart2j
 
     let chart2k =
       statechart(
         States, Events, Data, Event,
         "chart2k",
-        [state0[States, Events, Data, Event]()])
+        [state0()])
 
     debugEcho ""
     debugEcho chart2k
@@ -206,7 +209,7 @@ suite "DSL front-end":
     let chart2l =
       statechart(
         States, Events, Data, Event,
-        [state0[States, Events, Data, Event]()],
+        [state0()],
         "chart2l")
 
     debugEcho ""
@@ -216,7 +219,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         "chart2m",
-        children = [state0[States, Events, Data, Event]()])
+        children = [state0()])
 
     debugEcho ""
     debugEcho chart2m
@@ -224,7 +227,7 @@ suite "DSL front-end":
     let chart2n =
       statechart(
         States, Events, Data, Event,
-        children = [state0[States, Events, Data, Event]()],
+        children = [state0()],
         "chart2n")
 
     debugEcho ""
@@ -234,7 +237,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         name = "chart2o",
-        state0[States, Events, Data, Event]())
+        state0())
 
     debugEcho ""
     debugEcho chart2o
@@ -242,7 +245,7 @@ suite "DSL front-end":
     let chart2p =
       statechart(
         States, Events, Data, Event,
-        state0[States, Events, Data, Event](),
+        state0(),
         name = "chart2p")
 
     debugEcho ""
@@ -252,7 +255,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         name = "chart2q",
-        [state0[States, Events, Data, Event]()])
+        [state0()])
 
     debugEcho ""
     debugEcho chart2q
@@ -260,7 +263,7 @@ suite "DSL front-end":
     let chart2r =
       statechart(
         States, Events, Data, Event,
-        [state0[States, Events, Data, Event]()],
+        [state0()],
         name = "chart2r")
 
     debugEcho ""
@@ -270,7 +273,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         name = "chart2s",
-        children = [state0[States, Events, Data, Event]()])
+        children = [state0()])
 
     debugEcho ""
     debugEcho chart2s
@@ -278,7 +281,7 @@ suite "DSL front-end":
     let chart2t =
       statechart(
         States, Events, Data, Event,
-        children = [state0[States, Events, Data, Event]()],
+        children = [state0()],
         name = "chart2t")
 
     debugEcho ""
@@ -288,7 +291,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         st1,
-        state0[States, Events, Data, Event]())
+        state0())
 
     debugEcho ""
     debugEcho chart2u
@@ -296,7 +299,7 @@ suite "DSL front-end":
     let chart2v =
       statechart(
         States, Events, Data, Event,
-        state0[States, Events, Data, Event](),
+        state0(),
         st1)
 
     debugEcho ""
@@ -306,7 +309,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         st1,
-        [state0[States, Events, Data, Event]()])
+        [state0()])
 
     debugEcho ""
     debugEcho chart2w
@@ -314,7 +317,7 @@ suite "DSL front-end":
     let chart2x =
       statechart(
         States, Events, Data, Event,
-        [state0[States, Events, Data, Event]()],
+        [state0()],
         st1)
 
     debugEcho ""
@@ -324,7 +327,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         st1,
-        children = [state0[States, Events, Data, Event]()])
+        children = [state0()])
 
     debugEcho ""
     debugEcho chart2y
@@ -332,7 +335,7 @@ suite "DSL front-end":
     let chart2z =
       statechart(
         States, Events, Data, Event,
-        children = [state0[States, Events, Data, Event]()],
+        children = [state0()],
         st1)
 
     debugEcho ""
@@ -342,7 +345,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         initial = st1,
-        state0[States, Events, Data, Event]())
+        state0())
 
     debugEcho ""
     debugEcho chart2aa
@@ -350,7 +353,7 @@ suite "DSL front-end":
     let chart2ab =
       statechart(
         States, Events, Data, Event,
-        state0[States, Events, Data, Event](),
+        state0(),
         initial = st1)
 
     debugEcho ""
@@ -360,7 +363,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         initial = st1,
-        [state0[States, Events, Data, Event]()])
+        [state0()])
 
     debugEcho ""
     debugEcho chart2ac
@@ -368,7 +371,7 @@ suite "DSL front-end":
     let chart2ad =
       statechart(
         States, Events, Data, Event,
-        [state0[States, Events, Data, Event]()],
+        [state0()],
         initial = st1)
 
     debugEcho ""
@@ -378,7 +381,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         initial = st1,
-        children = [state0[States, Events, Data, Event]()])
+        children = [state0()])
 
     debugEcho ""
     debugEcho chart2ae
@@ -386,7 +389,7 @@ suite "DSL front-end":
     let chart2af =
       statechart(
         States, Events, Data, Event,
-        children = [state0[States, Events, Data, Event]()],
+        children = [state0()],
         initial = st1)
 
     debugEcho ""
@@ -395,14 +398,13 @@ suite "DSL front-end":
     let chart2ag =
       statechart(
         States, Events, Data, Event,
-        state0[States, Events, Data, Event](),
-        state0[States, Events, Data, Event]())
+        state0())
 
     debugEcho ""
     debugEcho chart2ag
 
-    # can maybe use `state0()` at this time (I did some work on `macro fixup`),
-    # so give it a try before starting on chart3 tests
+    # try to replace state0 with a minimal (at this time) `macro state` that
+    # handles the 0-args case
 
     # !!! chart3 !!!
 
