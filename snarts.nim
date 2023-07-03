@@ -288,20 +288,24 @@ macro fixup*(
   for i, node in bracket:
     if (node.kind == nnkCall) and
        (node.len > 0) and
-       (node[0].kind == nnkIdent) and
-       # here should be instead variations of "state[N], etc."
-       # for bare "anon", "state", et al. (i.e. macro invocations) will want a
-       # branch that is supplying typedescs as first four arguments instead of
-       # a bracket expression to instantiate a generic call
-       # ($node[0] in ["anon", "state"]):
-       ($node[0] in ["state0"]): # add other "state[N]", "parallel[N]", et al.
-      let fixedup = node.copy
-      fixedup[0] = newNimNode(kind = nnkBracketExpr)
-      fixedup[0].insert(0, node[0])
-      fixedup[0].insert(1, ident $St)
-      fixedup[0].insert(2, ident $Ev)
-      fixedup[0].insert(3, ident $Dm)
-      fixedup[0].insert(4, ident $Em)
+       (node[0].kind == nnkIdent):
+      var fixedup = node.copy
+      if $fixedup[0] in ["state0"]: # add "state[N]", "parallel[N]", et al.
+        fixedup[0] = newNimNode(kind = nnkBracketExpr)
+        fixedup[0].insert(0, node[0])
+        fixedup[0].insert(1, ident $St)
+        fixedup[0].insert(2, ident $Ev)
+        fixedup[0].insert(3, ident $Dm)
+        fixedup[0].insert(4, ident $Em)
+      elif $fixedup[0] in ["state"]: # add "anon", "parallel", et al.
+        if (fixedup.len < 2) or (fixedup[1] != ident $St):
+          fixedup.insert(1, ident $St)
+        if (fixedup.len < 3) or (fixedup[2] != ident $Ev):
+          fixedup.insert(2, ident $Ev)
+        if (fixedup.len < 4) or (fixedup[3] != ident $Dm):
+          fixedup.insert(3, ident $Dm)
+        if (fixedup.len < 5) or (fixedup[4] != ident $Em):
+          fixedup.insert(4, ident $Em)
       bracket[i] = quote do:
         when compiles(`fixedup`):
           `fixedup`
@@ -319,28 +323,6 @@ macro fixup*(
 # overloading an `untyped` parameter is presently unworkable, necessitating the
 # approach below re: macros `statechart`, `state`, et al. (and incurring longer
 # and more memory hungry compile times for the sake of expressivity)
-
-# need a `macro anon` variant of `macro state`
-macro state*(
-    St, Ev, Dm, Em: typedesc,
-    args: varargs[untyped]):
-      untyped =
-  let argsLen = args.len
-  when defined(debugMacros):
-    debugEcho ""
-    debugEcho "args.len: " & $argsLen
-    debugEcho ""
-    debugEcho treeRepr args
-  if argsLen == 0:
-    result = quote do:
-      state0[`St`, `Ev`, `Dm`, `Em`]()
-  else:
-    # fix me with elif/else branches re: `argsLen`
-    discard
-  when defined(debugMacros):
-    debugEcho ""
-    debugEcho toStrLit result
-    debugEcho ""
 
 macro statechart*(
     St, Ev, Dm, Em: typedesc,
@@ -416,6 +398,28 @@ macro statechart*(
     # impl me
     result = quote do:
       true
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho toStrLit result
+    debugEcho ""
+
+# need a `macro anon` variant of `macro state`
+macro state*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  let argsLen = args.len
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho "args.len: " & $argsLen
+    debugEcho ""
+    debugEcho treeRepr args
+  if argsLen == 0:
+    result = quote do:
+      state0[`St`, `Ev`, `Dm`, `Em`]()
+  else:
+    # fix me with elif/else branches re: `argsLen`
+    discard
   when defined(debugMacros):
     debugEcho ""
     debugEcho toStrLit result
