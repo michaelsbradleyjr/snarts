@@ -320,6 +320,28 @@ macro fixup*(
 # approach below re: macros `statechart`, `state`, et al. (and incurring longer
 # and more memory hungry compile times for the sake of expressivity)
 
+# need a `macro anon` variant of `macro state`
+macro state*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  let argsLen = args.len
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho "args.len: " & $argsLen
+    debugEcho ""
+    debugEcho treeRepr args
+  if argsLen == 0:
+    result = quote do:
+      state0[`St`, `Ev`, `Dm`, `Em`]()
+  else:
+    # fix me with elif/else branches re: `argsLen`
+    discard
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho toStrLit result
+    debugEcho ""
+
 macro statechart*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
