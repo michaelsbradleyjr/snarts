@@ -396,14 +396,118 @@ macro statechart*(
       else:
         `sc2e`
   elif argsLen == 3:
-    # impl me
-    # note: it will involve some fallbacks to statechart2() and statechart1()
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+      arg3 = args[2]
+      sc3a = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          `arg2`,
+          `arg3`)
+      sc3b = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          `arg3`,
+          `arg2`)
+      sc3c = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg2`,
+          `arg1`,
+          `arg3`)
+      sc3d = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg2`,
+          `arg3`,
+          `arg1`)
+      sc3e = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg3`,
+          `arg1`,
+          `arg2`)
+      sc3f = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg3`,
+          `arg2`,
+          `arg1`)
+      sc3g = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          `arg2`,
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
+      sc3h = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          `arg3`,
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
+      sc3i = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg2`,
+          `arg1`,
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
+      sc3j = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg2`,
+          `arg3`,
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
+      sc3k = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg3`,
+          `arg1`,
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
+      sc3l = quote do:
+        statechart3[`St`, `Ev`, `Dm`, `Em`](
+          `arg3`,
+          `arg2`,
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
+      sc3m = quote do:
+        statechart2[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`, `arg3`))
+      sc3n = quote do:
+        statechart2[`St`, `Ev`, `Dm`, `Em`](
+          `arg3`,
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`))
+      sc3o = quote do:
+        statechart1[`St`, `Ev`, `Dm`, `Em`](
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`, `arg3`))
     result = quote do:
-      true
-  # the following branch seems like it could be quite complex re: groupings,
-  # i.e. 3rd position varargs and `children =` ... but maybe not so bad,
-  # i.e. in the former the varargs can be "frozen" in 3rd position, while the
-  # latter can be in 1st, 2nd, or 3rd position
+      when compiles(`sc3a`):
+        `sc3a`
+      elif compiles(`sc3b`):
+        `sc3b`
+      elif compiles(`sc3c`):
+        `sc3c`
+      elif compiles(`sc3d`):
+        `sc3d`
+      elif compiles(`sc3e`):
+        `sc3e`
+      elif compiles(`sc3f`):
+        `sc3f`
+      elif compiles(`sc3g`):
+        `sc3g`
+      elif compiles(`sc3h`):
+        `sc3h`
+      elif compiles(`sc3i`):
+        `sc3i`
+      elif compiles(`sc3j`):
+        `sc3j`
+      elif compiles(`sc3k`):
+        `sc3k`
+      elif compiles(`sc3l`):
+        `sc3l`
+      elif compiles(`sc3m`):
+        `sc3m`
+      elif compiles(`sc3n`):
+        `sc3n`
+      else:
+        `sc3o`
+  # before working out this case, (very tediously) write out tests for all
+  # `argsLen == 3` variations, and double-check tests for `argsLen == 2|1`
+  # variations to ensure they're exhaustive; then rename this macro
+  # `form3WithChildren` that takes a string as first argument, i.e. so can
+  # reuse it with "statechart", "state", and "history"; if that works out, then
+  # proceed to impl the `argsLen > 3` branch below
   elif argsLen > 3:
     # impl me
     result = quote do:

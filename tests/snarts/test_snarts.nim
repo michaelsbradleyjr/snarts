@@ -403,9 +403,15 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2ag
 
-    # !!! chart3 !!!
+    let chart3a =
+      statechart(
+        States, Events, Data, Event,
+        "chart3a",
+        st1,
+        state())
 
-    # let chart3 =
+    debugEcho ""
+    debugEcho chart3a
 
 
 
