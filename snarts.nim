@@ -410,71 +410,41 @@ macro statechart*(
         statechart3[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           `arg2`,
-          `arg3`)
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
       sc3b = quote do:
         statechart3[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           `arg3`,
-          `arg2`)
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
       sc3c = quote do:
         statechart3[`St`, `Ev`, `Dm`, `Em`](
           `arg2`,
           `arg1`,
-          `arg3`)
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
       sc3d = quote do:
         statechart3[`St`, `Ev`, `Dm`, `Em`](
           `arg2`,
           `arg3`,
-          `arg1`)
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
       sc3e = quote do:
         statechart3[`St`, `Ev`, `Dm`, `Em`](
           `arg3`,
           `arg1`,
-          `arg2`)
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
       sc3f = quote do:
         statechart3[`St`, `Ev`, `Dm`, `Em`](
           `arg3`,
           `arg2`,
-          `arg1`)
+          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
       sc3g = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
-          `arg1`,
-          `arg2`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
-      sc3h = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
-          `arg1`,
-          `arg3`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
-      sc3i = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
-          `arg2`,
-          `arg1`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
-      sc3j = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
-          `arg2`,
-          `arg3`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
-      sc3k = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
-          `arg3`,
-          `arg1`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
-      sc3l = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
-          `arg3`,
-          `arg2`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
-      sc3m = quote do:
         statechart2[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`, `arg3`))
-      sc3n = quote do:
+      sc3h = quote do:
         statechart2[`St`, `Ev`, `Dm`, `Em`](
           `arg3`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`))
-      sc3o = quote do:
+      sc3i = quote do:
         statechart1[`St`, `Ev`, `Dm`, `Em`](
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`, `arg3`))
     result = quote do:
@@ -496,18 +466,6 @@ macro statechart*(
         `sc3h`
       elif compiles(`sc3i`):
         `sc3i`
-      elif compiles(`sc3j`):
-        `sc3j`
-      elif compiles(`sc3k`):
-        `sc3k`
-      elif compiles(`sc3l`):
-        `sc3l`
-      elif compiles(`sc3m`):
-        `sc3m`
-      elif compiles(`sc3n`):
-        `sc3n`
-      elif compiles(`sc3o`):
-        `sc3o`
       else:
         `sc3a`
   # before working out this case, (very tediously) write out tests for all
