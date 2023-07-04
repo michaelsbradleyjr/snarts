@@ -343,6 +343,8 @@ macro statechart*(
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
+    debugEcho "statechart" & "(" & $toStrLit(args) & ")"
+    debugEcho ""
     debugEcho treeRepr args
   if argsLen == 0:
     result = quote do:
@@ -359,8 +361,10 @@ macro statechart*(
     result = quote do:
       when compiles(`sc1a`):
         `sc1a`
-      else:
+      elif compiles(`sc1b`):
         `sc1b`
+      else:
+        `sc1a`
   elif argsLen == 2:
     let
       arg1 = args[0]
@@ -393,8 +397,10 @@ macro statechart*(
         `sc2c`
       elif compiles(`sc2d`):
         `sc2d`
-      else:
+      elif compiles(`sc2e`):
         `sc2e`
+      else:
+        `sc2a`
   elif argsLen == 3:
     let
       arg1 = args[0]
@@ -500,8 +506,10 @@ macro statechart*(
         `sc3m`
       elif compiles(`sc3n`):
         `sc3n`
-      else:
+      elif compiles(`sc3o`):
         `sc3o`
+      else:
+        `sc3a`
   # before working out this case, (very tediously) write out tests for all
   # `argsLen == 3` variations, and double-check tests for `argsLen == 2|1`
   # variations to ensure they're exhaustive; then rename this macro
@@ -526,6 +534,8 @@ macro state*(
   when defined(debugMacros):
     debugEcho ""
     debugEcho "args.len: " & $argsLen
+    debugEcho ""
+    debugEcho "state" & "(" & $toStrLit(args) & ")"
     debugEcho ""
     debugEcho treeRepr args
   if argsLen == 0:
