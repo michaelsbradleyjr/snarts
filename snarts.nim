@@ -331,32 +331,38 @@ macro fixup*(
     debugEcho ""
 
 # overloading an `untyped` parameter is presently unworkable, necessitating the
-# approach below re: macros `statechart`, `state`, et al. (and incurring longer
-# and more memory hungry compile times for the sake of expressivity)
+# approach below re: macros `statechart`, `state`, et al. (incurring longer and
+# more memory hungry compile-time ops for the sake of expressiveness)
 
-macro statechart*(
+macro form3WithChildren*(
+    form: static string,
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
       untyped =
-  let argsLen = args.len
+  let
+    argsLen = args.len
+    form0 = ident(form & "0")
+    form1 = ident(form & "1")
+    form2 = ident(form & "2")
+    form3 = ident(form & "3")
   when defined(debugMacros):
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
-    debugEcho "statechart" & "(" & $toStrLit(args) & ")"
+    debugEcho form & "(" & $toStrLit(args) & ")"
     debugEcho ""
     debugEcho treeRepr args
   if argsLen == 0:
     result = quote do:
-      statechart0[`St`, `Ev`, `Dm`, `Em`]()
+      `form0`[`St`, `Ev`, `Dm`, `Em`]()
   elif argsLen == 1:
     let
       arg = args[0]
       sc1a = quote do:
-        statechart1[`St`, `Ev`, `Dm`, `Em`](
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
           `arg`)
       sc1b = quote do:
-        statechart1[`St`, `Ev`, `Dm`, `Em`](
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg`))
     result = quote do:
       when compiles(`sc1a`):
@@ -370,23 +376,23 @@ macro statechart*(
       arg1 = args[0]
       arg2 = args[1]
       sc2a = quote do:
-        statechart2[`St`, `Ev`, `Dm`, `Em`](
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           `arg2`)
       sc2b = quote do:
-        statechart2[`St`, `Ev`, `Dm`, `Em`](
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg2`,
           `arg1`)
       sc2c = quote do:
-        statechart2[`St`, `Ev`, `Dm`, `Em`](
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
       sc2d = quote do:
-        statechart2[`St`, `Ev`, `Dm`, `Em`](
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg2`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
       sc2e = quote do:
-        statechart1[`St`, `Ev`, `Dm`, `Em`](
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`))
     result = quote do:
       when compiles(`sc2a`):
@@ -407,45 +413,45 @@ macro statechart*(
       arg2 = args[1]
       arg3 = args[2]
       sc3a = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
+        `form3`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           `arg2`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
       sc3b = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
+        `form3`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           `arg3`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
       sc3c = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
+        `form3`[`St`, `Ev`, `Dm`, `Em`](
           `arg2`,
           `arg1`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
       sc3d = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
+        `form3`[`St`, `Ev`, `Dm`, `Em`](
           `arg2`,
           `arg3`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
       sc3e = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
+        `form3`[`St`, `Ev`, `Dm`, `Em`](
           `arg3`,
           `arg1`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
       sc3f = quote do:
-        statechart3[`St`, `Ev`, `Dm`, `Em`](
+        `form3`[`St`, `Ev`, `Dm`, `Em`](
           `arg3`,
           `arg2`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
       sc3g = quote do:
-        statechart2[`St`, `Ev`, `Dm`, `Em`](
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`, `arg3`))
       sc3h = quote do:
-        statechart2[`St`, `Ev`, `Dm`, `Em`](
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg3`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`))
       sc3i = quote do:
-        statechart1[`St`, `Ev`, `Dm`, `Em`](
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`, `arg3`))
     result = quote do:
       when compiles(`sc3a`):
@@ -470,10 +476,7 @@ macro statechart*(
         `sc3a`
   # before working out this case, (very tediously) write out tests for all
   # `argsLen == 3` variations, and double-check tests for `argsLen == 2|1`
-  # variations to ensure they're exhaustive; then rename this macro
-  # `form3WithChildren` that takes a string as first argument, i.e. so can
-  # reuse it with "statechart", "state", and "history"; if that works out, then
-  # proceed to impl the `argsLen > 3` branch below
+  # variations to ensure they're exhaustive
   elif argsLen > 3:
     # impl me
     result = quote do:
@@ -483,30 +486,27 @@ macro statechart*(
     debugEcho toStrLit result
     debugEcho ""
 
-# need a `macro anon` variant of `macro state`
+macro statechart*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form3WithChildren(
+      "statechart",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
+
 macro state*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
       untyped =
-  let argsLen = args.len
-  when defined(debugMacros):
-    debugEcho ""
-    debugEcho "args.len: " & $argsLen
-    debugEcho ""
-    debugEcho "state" & "(" & $toStrLit(args) & ")"
-    debugEcho ""
-    debugEcho treeRepr args
-  if argsLen == 0:
-    result = quote do:
-      state0[`St`, `Ev`, `Dm`, `Em`]()
-  else:
-    # fix me with elif/else branches re: `argsLen`
-    discard
-  when defined(debugMacros):
-    debugEcho ""
-    debugEcho toStrLit result
-    debugEcho ""
+  result = quote do:
+    form3WithChildren(
+      "state",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
 
+# `macro anon` will invoke `form2WithChildren`
 
 
 # -----------------------------------------------------------------------------
