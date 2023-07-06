@@ -116,14 +116,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2a
 
-    let chart2b =
-      statechart(
-        States, Events, Data, Event,
-        st1,
-        "chart2b")
-
-    debugEcho ""
-    debugEcho chart2b
+    # let chart2b =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     st1,
+    #     "chart2b")
+    #
+    # debugEcho ""
+    # debugEcho chart2b
 
     let chart2c =
       statechart(
@@ -134,14 +134,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2c
 
-    let chart2d =
-      statechart(
-        States, Events, Data, Event,
-        st1,
-        name = "chart2d")
-
-    debugEcho ""
-    debugEcho chart2d
+    # let chart2d =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     st1,
+    #     name = "chart2d")
+    #
+    # debugEcho ""
+    # debugEcho chart2d
 
     let chart2e =
       statechart(
@@ -152,14 +152,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2e
 
-    let chart2f =
-      statechart(
-        States, Events, Data, Event,
-        initial = st1,
-        "chart2f")
-
-    debugEcho ""
-    debugEcho chart2f
+    # let chart2f =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     initial = st1,
+    #     "chart2f")
+    #
+    # debugEcho ""
+    # debugEcho chart2f
 
     let chart2g =
       statechart(
@@ -188,14 +188,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2i
 
-    let chart2j =
-      statechart(
-        States, Events, Data, Event,
-        state(),
-        "chart2j")
-
-    debugEcho ""
-    debugEcho chart2j
+    # let chart2j =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     state(),
+    #     "chart2j")
+    #
+    # debugEcho ""
+    # debugEcho chart2j
 
     let chart2k =
       statechart(
@@ -206,14 +206,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2k
 
-    let chart2l =
-      statechart(
-        States, Events, Data, Event,
-        [state()],
-        "chart2l")
-
-    debugEcho ""
-    debugEcho chart2l
+    # let chart2l =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     [state()],
+    #     "chart2l")
+    #
+    # debugEcho ""
+    # debugEcho chart2l
 
     let chart2m =
       statechart(
@@ -242,14 +242,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2o
 
-    let chart2p =
-      statechart(
-        States, Events, Data, Event,
-        state(),
-        name = "chart2p")
-
-    debugEcho ""
-    debugEcho chart2p
+    # let chart2p =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     state(),
+    #     name = "chart2p")
+    #
+    # debugEcho ""
+    # debugEcho chart2p
 
     let chart2q =
       statechart(
@@ -260,14 +260,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2q
 
-    let chart2r =
-      statechart(
-        States, Events, Data, Event,
-        [state()],
-        name = "chart2r")
-
-    debugEcho ""
-    debugEcho chart2r
+    # let chart2r =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     [state()],
+    #     name = "chart2r")
+    #
+    # debugEcho ""
+    # debugEcho chart2r
 
     let chart2s =
       statechart(
@@ -296,14 +296,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2u
 
-    let chart2v =
-      statechart(
-        States, Events, Data, Event,
-        state(),
-        st1)
-
-    debugEcho ""
-    debugEcho chart2v
+    # let chart2v =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     state(),
+    #     st1)
+    #
+    # debugEcho ""
+    # debugEcho chart2v
 
     let chart2w =
       statechart(
@@ -314,14 +314,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2w
 
-    let chart2x =
-      statechart(
-        States, Events, Data, Event,
-        [state()],
-        st1)
-
-    debugEcho ""
-    debugEcho chart2x
+    # let chart2x =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     [state()],
+    #     st1)
+    #
+    # debugEcho ""
+    # debugEcho chart2x
 
     let chart2y =
       statechart(
@@ -350,14 +350,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2aa
 
-    let chart2ab =
-      statechart(
-        States, Events, Data, Event,
-        state(),
-        initial = st1)
-
-    debugEcho ""
-    debugEcho chart2ab
+    # let chart2ab =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     state(),
+    #     initial = st1)
+    #
+    # debugEcho ""
+    # debugEcho chart2ab
 
     let chart2ac =
       statechart(
@@ -368,14 +368,14 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2ac
 
-    let chart2ad =
-      statechart(
-        States, Events, Data, Event,
-        [state()],
-        initial = st1)
-
-    debugEcho ""
-    debugEcho chart2ad
+    # let chart2ad =
+    #   statechart(
+    #     States, Events, Data, Event,
+    #     [state()],
+    #     initial = st1)
+    #
+    # debugEcho ""
+    # debugEcho chart2ad
 
     let chart2ae =
       statechart(
@@ -386,6 +386,10 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart2ae
 
+    # this (and probably others) shouldn't compile (per rule of children must
+    # be specified in last position), but it does because of what/how the else
+    # branch in `argsLen == 2` kicks it to fixup... so need to figure out the
+    # AST analysis approach
     let chart2af =
       statechart(
         States, Events, Data, Event,

@@ -183,11 +183,6 @@ func statechart3*[St: enum; Ev: enum; Dm: object; Em: object](
 func state0*[St: enum; Ev: enum; Dm: object; Em: object](): auto =
   initState[St, Ev, Dm, Em]()
 
-# don't need `anon[N]` funcs, but do want a `macro anon` with `compiles(...)`
-# branches that attempt `id =` and/or `initial =`
-# actually... `anon[N]` funcs probably are needed, to work in concert with
-# `macro anon`, i.e. to avoid the user having to think about when e.g. `initial
-# = s1` vs. `s1` is appropriate
 func anon0*[St: enum; Ev: enum; Dm: object; Em: object](): auto =
   initState[St, Ev, Dm, Em]()
 
@@ -204,6 +199,12 @@ func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
    sInitial = Opt.some initial)
 
 func state1*[St: enum; Ev: enum; Dm: object; Em: object](
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initState[St, Ev, Dm, Em](
+    sChildren = children)
+
+func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
     children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
   initState[St, Ev, Dm, Em](
@@ -253,6 +254,10 @@ macro fixup*(
     debugEcho Ev
     debugEcho Dm
     debugEcho Em
+    debugEcho ""
+    debugEcho "children.len: " & $children.len
+    debugEcho ""
+    debugEcho "fixup(" & $toStrLit(children) & ")"
     debugEcho ""
     debugEcho treeRepr children
   var
@@ -364,13 +369,15 @@ macro form3WithChildren*(
       sc1b = quote do:
         `form1`[`St`, `Ev`, `Dm`, `Em`](
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg`))
+    # need to come up with a strategy to choose a variation based on some
+    # analysis of the AST rather than `compiles()`, i.e. the latter becomes too
+    # resource hungry too quickly as branch and/or width increases in a
+    # statechart tree-structure
     result = quote do:
       when compiles(`sc1a`):
         `sc1a`
-      elif compiles(`sc1b`):
-        `sc1b`
       else:
-        `sc1a`
+        `sc1b`
   elif argsLen == 2:
     let
       arg1 = args[0]
@@ -381,17 +388,9 @@ macro form3WithChildren*(
           `arg2`)
       sc2b = quote do:
         `form2`[`St`, `Ev`, `Dm`, `Em`](
-          `arg2`,
-          `arg1`)
-      sc2c = quote do:
-        `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
-      sc2d = quote do:
-        `form2`[`St`, `Ev`, `Dm`, `Em`](
-          `arg2`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
-      sc2e = quote do:
+      sc2c = quote do:
         `form1`[`St`, `Ev`, `Dm`, `Em`](
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`))
     result = quote do:
@@ -399,14 +398,8 @@ macro form3WithChildren*(
         `sc2a`
       elif compiles(`sc2b`):
         `sc2b`
-      elif compiles(`sc2c`):
-        `sc2c`
-      elif compiles(`sc2d`):
-        `sc2d`
-      elif compiles(`sc2e`):
-        `sc2e`
       else:
-        `sc2a`
+        `sc2c`
   elif argsLen == 3:
     let
       arg1 = args[0]
@@ -418,39 +411,10 @@ macro form3WithChildren*(
           `arg2`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
       sc3b = quote do:
-        `form3`[`St`, `Ev`, `Dm`, `Em`](
-          `arg1`,
-          `arg3`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
-      sc3c = quote do:
-        `form3`[`St`, `Ev`, `Dm`, `Em`](
-          `arg2`,
-          `arg1`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
-      sc3d = quote do:
-        `form3`[`St`, `Ev`, `Dm`, `Em`](
-          `arg2`,
-          `arg3`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
-      sc3e = quote do:
-        `form3`[`St`, `Ev`, `Dm`, `Em`](
-          `arg3`,
-          `arg1`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
-      sc3f = quote do:
-        `form3`[`St`, `Ev`, `Dm`, `Em`](
-          `arg3`,
-          `arg2`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`))
-      sc3g = quote do:
         `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`, `arg3`))
-      sc3h = quote do:
-        `form2`[`St`, `Ev`, `Dm`, `Em`](
-          `arg3`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`))
-      sc3i = quote do:
+      sc3c = quote do:
         `form1`[`St`, `Ev`, `Dm`, `Em`](
           fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`, `arg3`))
     result = quote do:
@@ -458,22 +422,8 @@ macro form3WithChildren*(
         `sc3a`
       elif compiles(`sc3b`):
         `sc3b`
-      elif compiles(`sc3c`):
-        `sc3c`
-      elif compiles(`sc3d`):
-        `sc3d`
-      elif compiles(`sc3e`):
-        `sc3e`
-      elif compiles(`sc3f`):
-        `sc3f`
-      elif compiles(`sc3g`):
-        `sc3g`
-      elif compiles(`sc3h`):
-        `sc3h`
-      elif compiles(`sc3i`):
-        `sc3i`
       else:
-        `sc3a`
+        `sc3c`
   # before working out this case, (very tediously) write out tests for all
   # `argsLen == 3` variations, and double-check tests for `argsLen == 2|1`
   # variations to ensure they're exhaustive
