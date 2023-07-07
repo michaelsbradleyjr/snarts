@@ -1,6 +1,6 @@
 {.push raises: [].}
 
-import std/[macros, strutils, typetraits]
+import std/[macros, sets, strutils, typetraits]
 import ./snarts/algos
 
 export algos
@@ -244,7 +244,41 @@ func state3*[St: enum; Ev: enum; Dm: object; Em: object](
     sInitial = Opt.some initial,
     sChildren = children)
 
-macro fixup*(
+const
+  fixableFuncs = toHashSet(["state0"]) # add "state[N]", "parallel[N]", et al.
+  fixableMacros = toHashSet(["state"]) # add "anon", "parallel", et al.
+
+func isFixable(arg: NimNode): bool =
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho "isFixable(" & $toStrLit(arg) & ")"
+    debugEcho ""
+    debugEcho treeRepr arg
+  if arg.kind == nnkBracket:
+    result = true
+  elif (arg.kind == nnkPrefix) and
+       (arg.len > 0) and
+       (arg[0] == ident "@") and
+       (arg.len > 1) and
+       (arg[1].kind == nnkBracket):
+    result = true
+  elif (arg.kind == nnkExprEqExpr) and
+       (arg.len > 0) and
+       (arg[0] == ident "children"):
+    result = true
+  elif (arg.kind == nnkCall) and
+       (arg.len > 0) and
+       (arg[0].kind == nnkIdent) and
+       (($arg[0] in fixableFuncs) or
+        ($arg[0] in fixableMacros)):
+    result = true
+  else:
+    result = false
+  debugEcho ""
+  debugEcho result
+  debugEcho ""
+
+macro fixup(
     St, Ev, Dm, Em: typedesc,
     children: varargs[untyped]):
       untyped =
@@ -255,64 +289,61 @@ macro fixup*(
     debugEcho Dm
     debugEcho Em
     debugEcho ""
-    debugEcho "children.len: " & $children.len
-    debugEcho ""
     debugEcho "fixup(" & $toStrLit(children) & ")"
+    debugEcho ""
+    debugEcho "children.len: " & $children.len
     debugEcho ""
     debugEcho treeRepr children
   var
-    bracket: NimNode
+    bracket = newNimNode(kind = nnkBracket)
     children = children
   if (children.len > 0) and
      (children.kind == nnkArgList):
     if children[0].kind == nnkBracket:
-      bracket = children[0]
+      for i, node in children[0]:
+        bracket.insert(i, node)
     elif (children[0].kind == nnkPrefix) and
          (children[0].len > 0) and
          (children[0][0] == ident "@") and
          (children[0].len > 1) and
          (children[0][1].kind == nnkBracket):
-      bracket = children[0][1]
+      for i, node in children[0][1]:
+        bracket.insert(i, node)
     elif (children[0].kind == nnkExprEqExpr) and
          (children[0].len > 0) and
          (children[0][0] == ident "children") and
          (children[0].len > 1):
       if children[0][1].kind == nnkBracket:
-        bracket = newNimNode(kind = nnkBracket)
         for i, node in children[0][1]:
           bracket.insert(i, node)
-          children = newNimNode(kind = nnkArgList)
-          children.insert(0, bracket)
       elif (children[0][1].kind == nnkPrefix) and
            (children[0][1].len > 0) and
            (children[0][1][0] == ident "@") and
            (children[0][1].len > 1) and
            (children[0][1][1].kind == nnkBracket):
-        bracket = newNimNode(kind = nnkBracket)
         for i, node in children[0][1][1]:
           bracket.insert(i, node)
-          children = newNimNode(kind = nnkArgList)
-          children.insert(0, bracket)
+      else:
+        bracket.insert(0, children[0][1])
     else:
-      bracket = newNimNode(kind = nnkBracket)
       for i, node in children:
         bracket.insert(i, node)
-      children = newNimNode(kind = nnkArgList)
-      children.insert(0, bracket)
+    children = newNimNode(kind = nnkArgList)
+    children.insert(0, bracket)
 
   for i, node in bracket:
     if (node.kind == nnkCall) and
        (node.len > 0) and
        (node[0].kind == nnkIdent):
       var fixedup = node.copy
-      if $fixedup[0] in ["state0"]: # add "state[N]", "parallel[N]", et al.
+      if $fixedup[0] in fixableFuncs:
         fixedup[0] = newNimNode(kind = nnkBracketExpr)
         fixedup[0].insert(0, node[0])
         fixedup[0].insert(1, ident $St)
         fixedup[0].insert(2, ident $Ev)
         fixedup[0].insert(3, ident $Dm)
         fixedup[0].insert(4, ident $Em)
-      elif $fixedup[0] in ["state"]: # add "anon", "parallel", et al.
+      elif $fixedup[0] in fixableMacros:
         if (fixedup.len < 2) or (fixedup[1] != ident $St):
           fixedup.insert(1, ident $St)
         if (fixedup.len < 3) or (fixedup[2] != ident $Ev):
@@ -321,11 +352,7 @@ macro fixup*(
           fixedup.insert(3, ident $Dm)
         if (fixedup.len < 5) or (fixedup[4] != ident $Em):
           fixedup.insert(4, ident $Em)
-      bracket[i] = quote do:
-        when compiles(`fixedup`):
-          `fixedup`
-        else:
-          `node`
+      bracket[i] = fixedup
   result = quote do:
     `children`
   when defined(debugMacros):
@@ -336,10 +363,117 @@ macro fixup*(
     debugEcho ""
 
 # overloading an `untyped` parameter is presently unworkable, necessitating the
-# approach below re: macros `statechart`, `state`, et al. (incurring longer and
-# more memory hungry compile-time ops for the sake of expressiveness)
+# approach below re: macros `statechart`, `state`, `parallel`, et al.
 
-macro form3WithChildren*(
+# broken, e.g. needs to consider some arguments being isFixable,
+# cf. form3WithChildren
+macro form1WithChildren(
+    form: static string,
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  let
+    argsLen = args.len
+    form0 = ident(form & "0")
+    form1 = ident(form & "1")
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho ""
+    debugEcho "args.len: " & $argsLen
+    debugEcho ""
+    debugEcho treeRepr args
+  if argsLen == 0:
+    result = quote do:
+      `form0`[`St`, `Ev`, `Dm`, `Em`]()
+  elif argsLen == 1:
+    let
+      arg1 = args[0]
+    if arg1.isFixable:
+      result = quote do:
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg1`))
+    else:
+      result = quote do:
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`)
+  else:
+    let
+      arg1 = args[0..<(args.len)]
+    result = quote do:
+      `form1`[`St`, `Ev`, `Dm`, `Em`](
+        fixup(`St`, `Ev`, `Dm`, `Em`,
+          `arg1`))
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho toStrLit result
+    debugEcho ""
+
+# broken, e.g. needs to consider some arguments being isFixable,
+# cf. form3WithChildren
+macro form2WithChildren(
+    form: static string,
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  let
+    argsLen = args.len
+    form0 = ident(form & "0")
+    form1 = ident(form & "1")
+    form2 = ident(form & "2")
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho ""
+    debugEcho "args.len: " & $argsLen
+    debugEcho ""
+    debugEcho treeRepr args
+  if argsLen == 0:
+    result = quote do:
+      `form0`[`St`, `Ev`, `Dm`, `Em`]()
+  elif argsLen == 1:
+    let
+      arg1 = args[0]
+    if arg1.isFixable:
+      result = quote do:
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg1`))
+    else:
+      result = quote do:
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`)
+  elif argsLen == 2:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+    if arg2.isFixable:
+      result = quote do:
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg2`))
+    else:
+      result = quote do:
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          `arg2`)
+  else:
+    let
+      arg1 = args[0]
+      arg2 = args[1..<(args.len)]
+    result = quote do:
+      `form2`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`,
+        fixup(`St`, `Ev`, `Dm`, `Em`,
+          `arg2`))
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho toStrLit result
+    debugEcho ""
+
+macro form3WithChildren(
     form: static string,
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
@@ -352,9 +486,9 @@ macro form3WithChildren*(
     form3 = ident(form & "3")
   when defined(debugMacros):
     debugEcho ""
-    debugEcho "args.len: " & $argsLen
-    debugEcho ""
     debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho ""
+    debugEcho "args.len: " & $argsLen
     debugEcho ""
     debugEcho treeRepr args
   if argsLen == 0:
@@ -362,75 +496,88 @@ macro form3WithChildren*(
       `form0`[`St`, `Ev`, `Dm`, `Em`]()
   elif argsLen == 1:
     let
-      arg = args[0]
-      sc1a = quote do:
+      arg1 = args[0]
+    if arg1.isFixable:
+      result = quote do:
         `form1`[`St`, `Ev`, `Dm`, `Em`](
-          `arg`)
-      sc1b = quote do:
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg1`))
+    else:
+      result = quote do:
         `form1`[`St`, `Ev`, `Dm`, `Em`](
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg`))
-    # need to come up with a strategy to choose a variation based on some
-    # analysis of the AST rather than `compiles()`, i.e. the latter becomes too
-    # resource hungry too quickly as branch and/or width increases in a
-    # statechart tree-structure
-    result = quote do:
-      when compiles(`sc1a`):
-        `sc1a`
-      else:
-        `sc1b`
+          `arg1`)
   elif argsLen == 2:
     let
       arg1 = args[0]
       arg2 = args[1]
-      sc2a = quote do:
+    if arg1.isFixable:
+      result = quote do:
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg1`,
+            `arg2`))
+    elif arg2.isFixable:
+      result = quote do:
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg2`))
+    else:
+      result = quote do:
         `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           `arg2`)
-      sc2b = quote do:
-        `form2`[`St`, `Ev`, `Dm`, `Em`](
-          `arg1`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`))
-      sc2c = quote do:
-        `form1`[`St`, `Ev`, `Dm`, `Em`](
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`))
-    result = quote do:
-      when compiles(`sc2a`):
-        `sc2a`
-      elif compiles(`sc2b`):
-        `sc2b`
-      else:
-        `sc2c`
   elif argsLen == 3:
     let
       arg1 = args[0]
       arg2 = args[1]
       arg3 = args[2]
-      sc3a = quote do:
+    if arg1.isFixable:
+      result = quote do:
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg1`,
+            `arg2`,
+            `arg3`))
+    elif arg2.isFixable:
+      result = quote do:
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg2`,
+            `arg3`))
+    else:
+      result = quote do:
         `form3`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
           `arg2`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg3`))
-      sc3b = quote do:
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg3`))
+  else:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+      arg3 = args[2..<(args.len)]
+    if arg1.isFixable:
+      result = quote do:
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `args`))
+    elif arg2.isFixable:
+      let
+        rest = args[1..<(args.len)]
+      result = quote do:
         `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg2`, `arg3`))
-      sc3c = quote do:
-        `form1`[`St`, `Ev`, `Dm`, `Em`](
-          fixup(`St`, `Ev`, `Dm`, `Em`, `arg1`, `arg2`, `arg3`))
-    result = quote do:
-      when compiles(`sc3a`):
-        `sc3a`
-      elif compiles(`sc3b`):
-        `sc3b`
-      else:
-        `sc3c`
-  # before working out this case, (very tediously) write out tests for all
-  # `argsLen == 3` variations, and double-check tests for `argsLen == 2|1`
-  # variations to ensure they're exhaustive
-  elif argsLen > 3:
-    # impl me
-    result = quote do:
-      true
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `rest`))
+    else:
+      result = quote do:
+        `form3`[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          `arg2`,
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg3`))
   when defined(debugMacros):
     debugEcho ""
     debugEcho toStrLit result
@@ -456,8 +603,61 @@ macro state*(
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
 
-# `macro anon` will invoke `form2WithChildren`
+macro anon*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form2WithChildren(
+      "anon",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
 
+macro parallel*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form2WithChildren(
+      "parallel",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
+
+# macro transition*(): untyped = ...
+
+macro initial*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form1WithChildren(
+      "initial",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
+
+macro final*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form2WithChildren(
+      "final",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
+
+# macro onEntry*(): untyped = ...
+
+# macro onExit*(): untyped = ...
+
+macro history*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form3WithChildren(
+      "history",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
 
 # -----------------------------------------------------------------------------
 # will need variations of transition macros/templates that allow for cond
