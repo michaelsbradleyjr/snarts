@@ -14,7 +14,7 @@
 {.push raises: [].}
 
 import std/[macros, sets]
-import pkg/stew/results
+import pkg/results
 
 export results
 

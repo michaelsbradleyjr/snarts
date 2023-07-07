@@ -8,5 +8,5 @@ installFiles = @["LICENSE", "LICENSE-APACHEv2", "LICENSE-MIT", "snarts.nim"]
 
 requires "nim >= 1.6.0",
          "chronos",
-         "stew",
+         "results",
          "unittest2"
