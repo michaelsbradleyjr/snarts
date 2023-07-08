@@ -183,30 +183,6 @@ func statechart3*[St: enum; Ev: enum; Dm: object; Em: object](
     scName = (if name == "": Opt.none string else: Opt.some name),
     scChildren = children)
 
-func anon0*[St: enum; Ev: enum; Dm: object; Em: object]():
-      auto =
-  initState[St, Ev, Dm, Em]()
-
-func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
-    initial: St):
-      auto =
- initState[St, Ev, Dm, Em](
-   sInitial = Opt.some initial)
-
-func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
-    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sChildren = children)
-
-func anon2*[St: enum; Ev: enum; Dm: object; Em: object](
-    initial: St,
-    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sInitial = Opt.some initial,
-    sChildren = children)
-
 func state0*[St: enum; Ev: enum; Dm: object; Em: object]():
       auto =
   initState[St, Ev, Dm, Em]()
@@ -246,6 +222,30 @@ func state3*[St: enum; Ev: enum; Dm: object; Em: object](
       auto =
   initState[St, Ev, Dm, Em](
     sId = Opt.some id,
+    sInitial = Opt.some initial,
+    sChildren = children)
+
+func anon0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initState[St, Ev, Dm, Em]()
+
+func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
+    initial: St):
+      auto =
+ initState[St, Ev, Dm, Em](
+   sInitial = Opt.some initial)
+
+func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initState[St, Ev, Dm, Em](
+    sChildren = children)
+
+func anon2*[St: enum; Ev: enum; Dm: object; Em: object](
+    initial: St,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initState[St, Ev, Dm, Em](
     sInitial = Opt.some initial,
     sChildren = children)
 
@@ -383,7 +383,7 @@ macro fixup(
     debugEcho toStrLit result
     debugEcho ""
 
-macro form1(
+macro form1NoChildren(
     form: static string,
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
@@ -631,7 +631,74 @@ macro form3WithChildren(
     debugEcho toStrLit result
     debugEcho ""
 
-macro form5(
+macro form4NoChildren(
+    form: static string,
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  let
+    argsLen = args.len
+    form0 = ident(form & "0")
+    form1 = ident(form & "1")
+    form2 = ident(form & "2")
+    form3 = ident(form & "3")
+    form4 = ident(form & "4")
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho ""
+    debugEcho "args.len: " & $argsLen
+    debugEcho ""
+    debugEcho treeRepr args
+  if argsLen == 0:
+    result = quote do:
+      `form0`[`St`, `Ev`, `Dm`, `Em`]()
+  elif argsLen == 1:
+    let
+      arg1 = args[0]
+    result = quote do:
+      `form1`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`)
+  elif argsLen == 2:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+    result = quote do:
+      `form2`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`,
+        `arg2`)
+  elif argsLen == 3:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+      arg3 = args[2]
+    result = quote do:
+      `form3`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`,
+        `arg2`,
+        `arg3`)
+  elif argsLen == 4:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+      arg3 = args[2]
+      arg4 = args[3]
+    result = quote do:
+      `form4`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`,
+        `arg2`,
+        `arg3`,
+        `arg4`)
+  else:
+    raise (ref AssertionDefect)(
+      msg: "macro '" & form &
+           "' accepts at most 4 arguments but was invoked with " & $argsLen)
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho toStrLit result
+    debugEcho ""
+
+macro form5NoChildren(
     form: static string,
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
@@ -723,16 +790,6 @@ macro statechart*(
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
 
-macro anon*(
-    St, Ev, Dm, Em: typedesc,
-    args: varargs[untyped]):
-      untyped =
-  result = quote do:
-    form2WithChildren(
-      "anon",
-      `St`, `Ev`, `Dm`, `Em`,
-      `args`)
-
 macro state*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
@@ -740,6 +797,16 @@ macro state*(
   result = quote do:
     form3WithChildren(
       "state",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
+
+macro anon*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form2WithChildren(
+      "anon",
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
 
@@ -757,9 +824,25 @@ macro transition*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
       untyped =
+  for i, node in args:
+    if node.kind == nnkBlockStmt:
+      args[i] = toStrLit node
   result = quote do:
-    form5(
+    form5NoChildren(
       "transition",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
+
+macro guard*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  for i, node in args:
+    if node.kind == nnkBlockStmt:
+      args[i] = toStrLit node
+  result = quote do:
+    form4NoChildren(
+      "guard",
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
 
@@ -787,8 +870,11 @@ macro onEntry*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
       untyped =
+  for i, node in args:
+    if node.kind == nnkBlockStmt:
+      args[i] = toStrLit node
   result = quote do:
-    form1(
+    form1NoChildren(
       "onEntry",
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
@@ -797,8 +883,11 @@ macro onExit*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
       untyped =
+  for i, node in args:
+    if node.kind == nnkBlockStmt:
+      args[i] = toStrLit node
   result = quote do:
-    form1(
+    form1NoChildren(
       "onExit",
       `St`, `Ev`, `Dm`, `Em`,
       `args`)

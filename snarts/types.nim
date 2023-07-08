@@ -13,32 +13,38 @@
 
 {.push raises: [].}
 
-import std/[macros, sets]
+# import std/[macros, sets]
+import std/sets
 import pkg/results
 
 export results
 
-macro Cond*(): untyped =
-  let
-    cond = genSym(nskProc, "cond")
-    config = ident "config"
-    data = ident "data"
-    event = ident "event"
-  result = quote do:
-    proc `cond`(`data`: Dm, `event`: Em, `config`: Configuration[St]): bool
-      {.nimcall, noSideEffect, raises: [].}
-    typeof(`cond`)
+# macro Cond*(): untyped =
+#   let
+#     cond = genSym(nskProc, "cond")
+#     config = ident "config"
+#     data = ident "data"
+#     event = ident "event"
+#   result = quote do:
+#     proc `cond`(`data`: Dm, `event`: Em, `config`: Configuration[St]): bool
+#       {.nimcall, noSideEffect, raises: [].}
+#     typeof(`cond`)
 
-macro Exe*(): untyped =
-  let
-    config = ident "config"
-    data = ident "data"
-    event = ident "event"
-    exe = genSym(nskProc, "exe")
-  result = quote do:
-    proc `exe`(`data`: ref Dm, `event`: Em, `config`: Configuration[St])
-      {.nimcall, noSideEffect, raises: [].}
-    typeof(`exe`)
+# macro Exe*(): untyped =
+#   let
+#     config = ident "config"
+#     data = ident "data"
+#     event = ident "event"
+#     exe = genSym(nskProc, "exe")
+#   result = quote do:
+#     proc `exe`(`data`: ref Dm, `event`: Em, `config`: Configuration[St])
+#       {.nimcall, noSideEffect, raises: [].}
+#     typeof(`exe`)
+
+type
+  Cond* = distinct string
+
+  Exe* = distinct string
 
 type
   # placeholder

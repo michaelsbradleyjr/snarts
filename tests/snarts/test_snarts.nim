@@ -63,8 +63,6 @@ suite "DSL front-end":
     debugEcho ""
     debugEcho chart
 
-
-
     debugEcho ""
 
 suite "Validation":
