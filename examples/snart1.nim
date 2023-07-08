@@ -15,44 +15,42 @@ type
   Event = object
     name: Events
 
-# const # or: let
-#   spec = statechart(
-#     States, Events, Data, Event,
-#     "snart1",
-#     initial = inactive
-#   ):[
-#     state(active, [
-#       transition(toggle, inactive)
-#     ]),
-#     state(inactive, [
-#       transition(toggle, active)
-#     ])
-#   ]
-#
-#   machine = spec.compile.expect("failure not expected")
+const # or: let
+  spec = statechart(
+    States, Events, Data, Event,
+    "snart1",
+    initial = inactive, [
+      state(active, [
+        transition(toggle, inactive, (
+          block:
+            debugEcho config
+        ))
+      ]),
+      state(inactive, [
+        transition(toggle, active, (
+          block:
+            debugEcho config
+        ))
+      ])
+  ])
 
-# echo ""
-# echo spec
-# echo ""
-# echo machine
-#
-# let actor = machine.start.expect("failure not expected")
-#
-# echo ""
-# echo actor[]
-# echo ""
+  machine = spec.compile.expect("failure not expected")
 
-# !! demo with transition exe that debugEchos config instead of echoing
-#    actor.config
-# ---------------------------------------------------------------------
+echo ""
+echo spec
+echo ""
+echo machine
+
+let actor = machine.start.expect("failure not expected")
+
+echo ""
+echo actor[]
+echo ""
+
 # actor.send Event(name: toggle)
-#
-# echo actor.config
-# => {active}
-#
-# actor.send Event(name: toggle)
-#
-# echo actor.config
 # => {inactive}
+#
+# actor.send Event(name: toggle)
+# => {active}
 
 # actor.stop.expect("failure not expected")

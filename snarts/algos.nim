@@ -14,6 +14,10 @@ import ./types
 
 export types
 
+# earlier work re: snkTransition nodes was removed in the following commit, but
+# that code can be a reference for how I was building cond/exe procs:
+# https://github.com/michaelsbradleyjr/snarts/commit/67800f9241
+
 # don't delete: may be used eventually or may prove unnecessary
 # -------------------------------------------------------------
 # proc box[T](x: T): ref T =

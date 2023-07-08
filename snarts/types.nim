@@ -46,6 +46,12 @@ type
 
   Exe* = distinct string
 
+func `$`*(x: Cond): string =
+  x.string
+
+func `$`*(x: Exe): string =
+  x.string
+
 type
   # placeholder
   Actor[St: enum; Ev: enum; Dm: object; Em: object] = object

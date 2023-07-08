@@ -249,13 +249,480 @@ func anon2*[St: enum; Ev: enum; Dm: object; Em: object](
     sInitial = Opt.some initial,
     sChildren = children)
 
+func parallel0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initParallel[St, Ev, Dm, Em]()
+
+func parallel1*[St: enum; Ev: enum; Dm: object; Em: object](
+    id: St):
+      auto =
+  initParallel[St, Ev, Dm, Em](
+    pId = Opt.some id)
+
+func parallel1*[St: enum; Ev: enum; Dm: object; Em: object](
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initParallel[St, Ev, Dm, Em](
+    pChildren = children)
+
+func parallel2*[St: enum; Ev: enum; Dm: object; Em: object](
+    id: St,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initParallel[St, Ev, Dm, Em](
+    pId = Opt.some id,
+    pChildren = children)
+
+func transition0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initTransition[St, Ev, Dm, Em]()
+
+func transition1*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event)
+
+func transition1*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tTarget = Opt.some target)
+
+func transition1*[St: enum; Ev: enum; Dm: object; Em: object](
+    exe: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tExe = Opt.some Exe(exe))
+
+func transition1*[St: enum; Ev: enum; Dm: object; Em: object](
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tKind = kind)
+
+func transition2*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tTarget = Opt.some target)
+
+func transition2*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    exe: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tExe = Opt.some Exe(exe))
+
+func transition2*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tKind = kind)
+
+func transition2*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St,
+    exe: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tTarget = Opt.some target,
+    tExe = Opt.some Exe(exe))
+
+func transition2*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tTarget = Opt.some target,
+    tKind = kind)
+
+func transition2*[St: enum; Ev: enum; Dm: object; Em: object](
+    cond: string,
+    exe: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tCond = Opt.some Cond(cond),
+    tExe = Opt.some Exe(exe))
+
+func transition2*[St: enum; Ev: enum; Dm: object; Em: object](
+    exe: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tExe = Opt.some Exe(exe),
+    tKind = kind)
+
+func transition3*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St,
+    exe: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tTarget = Opt.some target,
+    tExe = Opt.some Exe(exe))
+
+func transition3*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tTarget = Opt.some target,
+    tKind = kind)
+
+func transition3*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    cond: string,
+    exe: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tCond = Opt.some Cond(cond),
+    tExe = Opt.some Exe(exe))
+
+func transition3*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    exe: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tKind = kind,
+    tExe = Opt.some Exe(exe))
+
+func transition3*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St,
+    cond: string,
+    exe: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tCond = Opt.some Cond(cond),
+    tTarget = Opt.some target,
+    tExe = Opt.some Exe(exe))
+
+func transition3*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St,
+    exe: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tTarget = Opt.some target,
+    tKind = kind,
+    tExe = Opt.some Exe(exe))
+
+func transition3*[St: enum; Ev: enum; Dm: object; Em: object](
+    cond: string,
+    exe: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tCond = Opt.some Cond(cond),
+    tKind = kind,
+    tExe = Opt.some Exe(exe))
+
+func transition4*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St,
+    cond: string,
+    exe: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tCond = Opt.some Cond(cond),
+    tTarget = Opt.some target,
+    tExe = Opt.some Exe(exe))
+
+func transition4*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St,
+    exe: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tTarget = Opt.some target,
+    tKind = kind,
+    tExe = Opt.some Exe(exe))
+
+func transition4*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St,
+    cond: string,
+    exe: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tCond = Opt.some Cond(cond),
+    tTarget = Opt.some target,
+    tKind = kind,
+    tExe = Opt.some Exe(exe))
+
+func transition5*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St,
+    cond: string,
+    exe: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tCond = Opt.some Cond(cond),
+    tTarget = Opt.some target,
+    tKind = kind,
+    tExe = Opt.some Exe(exe))
+
+func guard0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initTransition[St, Ev, Dm, Em]()
+
+func guard1*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event)
+
+func guard1*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tTarget = Opt.some target)
+
+func guard1*[St: enum; Ev: enum; Dm: object; Em: object](
+    cond: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tCond = Opt.some Exe(exe))
+
+func guard1*[St: enum; Ev: enum; Dm: object; Em: object](
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tKind = kind)
+
+func guard2*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tTarget = Opt.some target)
+
+func guard2*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    cond: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tCond = Opt.some Cond(cond))
+
+func guard2*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tKind = kind)
+
+func guard2*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St,
+    cond: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tTarget = Opt.some target,
+    tCond = Opt.some Cond(cond))
+
+func guard2*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tTarget = Opt.some target,
+    tKind = kind)
+
+func guard2*[St: enum; Ev: enum; Dm: object; Em: object](
+    cond: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tCond = Opt.some Cond(cond),
+    tKind = kind)
+
+func guard3*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St,
+    cond: string):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tCond = Opt.some Cond(cond),
+    tTarget = Opt.some target)
+
+func guard3*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tTarget = Opt.some target,
+    tKind = kind)
+
+func guard3*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    cond: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tCond = Opt.some Cond(cond),
+    tKind = kind)
+
+func guard3*[St: enum; Ev: enum; Dm: object; Em: object](
+    target: St,
+    cond: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tCond = Opt.some Cond(cond),
+    tTarget = Opt.some target,
+    tKind = kind)
+
+func guard4*[St: enum; Ev: enum; Dm: object; Em: object](
+    event: Ev,
+    target: St,
+    cond: string,
+    kind: TransitionKind):
+      auto =
+  initTransition[St, Ev, Dm, Em](
+    tEvent = Opt.some event,
+    tCond = Opt.some Cond(cond),
+    tTarget = Opt.some target,
+    tKind = kind)
+
+func initial0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initInitial[St, Ev, Dm, Em]()
+
+func initial1*[St: enum; Ev: enum; Dm: object; Em: object](
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initInitial[St, Ev, Dm, Em](
+    iChildren = children)
+
+func final0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initFinal[St, Ev, Dm, Em]()
+
+func final1*[St: enum; Ev: enum; Dm: object; Em: object](
+    id: St):
+      auto =
+  initFinal[St, Ev, Dm, Em](
+    fId = Opt.some id)
+
+func final1*[St: enum; Ev: enum; Dm: object; Em: object](
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initFinal[St, Ev, Dm, Em](
+    fChildren = children)
+
+func final2*[St: enum; Ev: enum; Dm: object; Em: object](
+    id: St,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initFinal[St, Ev, Dm, Em](
+    fId = Opt.some id,
+    fChildren = children)
+
+func onEntry0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initOnEntry[St, Ev, Dm, Em]()
+
+func onEntry1*[St: enum; Ev: enum; Dm: object; Em: object](
+    exe: string):
+      auto =
+  initOnEntry[St, Ev, Dm, Em](
+    oExe = Opt.some Exe(exe))
+
+func onExit0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initOnExit[St, Ev, Dm, Em]()
+
+func onExit1*[St: enum; Ev: enum; Dm: object; Em: object](
+    exe: string):
+      auto =
+  initOnExit[St, Ev, Dm, Em](
+    oExe = Opt.some Exe(exe))
+
+func history0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
+  initHistory[St, Ev, Dm, Em]()
+
+func history1*[St: enum; Ev: enum; Dm: object; Em: object](
+    id: St):
+      auto =
+  initHistory[St, Ev, Dm, Em](
+    hId = Opt.some id)
+
+func history1*[St: enum; Ev: enum; Dm: object; Em: object](
+    kind: HistoryKind):
+      auto =
+  initHistory[St, Ev, Dm, Em](
+    hKind = kind)
+
+func history1*[St: enum; Ev: enum; Dm: object; Em: object](
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initHistory[St, Ev, Dm, Em](
+    hChildren = children)
+
+func history2*[St: enum; Ev: enum; Dm: object; Em: object](
+    id: St,
+    kind: HistoryKind):
+      auto =
+  initHistory[St, Ev, Dm, Em](
+    hId = Opt.some id,
+    hKind = kind)
+
+func history2*[St: enum; Ev: enum; Dm: object; Em: object](
+    id: St,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initHistory[St, Ev, Dm, Em](
+    hId = Opt.some id,
+    hChildren = children)
+
+func history2*[St: enum; Ev: enum; Dm: object; Em: object](
+    kind: HistoryKind,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initHistory[St, Ev, Dm, Em](
+    hKind = kind,
+    hChildren = children)
+
+func history3*[St: enum; Ev: enum; Dm: object; Em: object](
+    id: St,
+    kind: HistoryKind,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initHistory[St, Ev, Dm, Em](
+    hId = Opt.some id,
+    hKind = kind,
+    hChildren = children)
+
 const
   fixableFuncs = toHashSet([
-    "anon0", "anon1", "anon2",
     "state0", "state1", "state2", "state3",
+    "anon0", "anon1", "anon2",
     "parallel0", "parallel1", "parallel2",
     "transition0", "transition1", "transition2", "transition3", "transition4",
       "transition5",
+    "guard0", "guard1", "guard2", "guard3", "guard4",
     "initial0", "initial1",
     "final0", "final1", "final2",
     "onEntry0", "onEntry1",
@@ -264,8 +731,8 @@ const
   ])
 
   fixableMacros = toHashSet([
-    "anon", "state", "parallel", "transition", "initial", "final", "onEntry",
-    "onExit", "history"
+    "state", "anon", "parallel", "transition", "guard", "initial", "final",
+    "onEntry", "onExit", "history"
   ])
 
 func isFixable(
@@ -824,9 +1291,14 @@ macro transition*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
       untyped =
+  debugEcho ""
+  debugEcho "PRINTING NODE TYPES"
+  debugEcho ""
   for i, node in args:
-    if node.kind == nnkBlockStmt:
+    debugEcho node.kind
+    if node.kind == nnkStmtListExpr:
       args[i] = toStrLit node
+  debugEcho ""
   result = quote do:
     form5NoChildren(
       "transition",
@@ -901,12 +1373,3 @@ macro history*(
       "history",
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
-
-# -----------------------------------------------------------------------------
-# will need variations of transition macros/templates that allow for cond
-# and/or exe to be untyped or concrete Cond/Exe
-
-# earlier work re: snkTransition nodes was removed in the following commit, but
-# that code can be a reference for how I was successfully building cond/exe
-# procs:
-# https://github.com/michaelsbradleyjr/snarts/commit/67800f924166391f9b64291f133b0dd662c117c2
