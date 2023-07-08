@@ -21,17 +21,15 @@ const # or: let
     "snart1",
     initial = inactive, [
       state(active, [
-        transition(toggle, inactive, (
-          block:
+        transition(toggle, inactive,
+          exe = block:
             debugEcho config
-        ))
-      ]),
+      )]),
       state(inactive, [
-        transition(toggle, active, (
-          block:
+        transition(toggle, active,
+          exe = block:
             debugEcho config
-        ))
-      ])
+      )])
   ])
 
   machine = spec.compile.expect("failure not expected")
