@@ -145,7 +145,7 @@ type
       fId*: Opt[St]
       fChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
     of snkOnEntry, snkOnExit:
-      oExe*: Exe()
+      oExe*: Opt[Exe]
     of snkHistory:
       hId*: Opt[St]
       hKind*: HistoryKind

@@ -5,6 +5,9 @@ import ./snarts/algos
 
 export algos
 
+# overloading an `untyped` parameter is presently unworkable, necessitating the
+# approach below re: macros `statechart`, `state`, `parallel`, et al.
+
 macro enforce(T1, T2: typedesc; fieldName: static string): untyped =
   let field = ident fieldName
   result = quote do:
@@ -94,7 +97,7 @@ func initFinal*[St: enum; Ev: enum; Dm: object; Em: object](
     fChildren: @fChildren)
 
 func initOnEntry*[St: enum; Ev: enum; Dm: object; Em: object](
-    oExe: Exe()):
+    oExe: Opt[Exe] = Opt.none Exe):
       StatechartNode[St, Ev, Dm, Em] =
   enforce(Dm, St, "id")
   enforce(Em, Ev, "name")
@@ -103,7 +106,7 @@ func initOnEntry*[St: enum; Ev: enum; Dm: object; Em: object](
     oExe: oExe)
 
 func initOnExit*[St: enum; Ev: enum; Dm: object; Em: object](
-    oExe: Exe()):
+    oExe: Opt[Exe] = Opt.none Exe):
       StatechartNode[St, Ev, Dm, Em] =
   enforce(Dm, St, "id")
   enforce(Em, Ev, "name")
@@ -155,35 +158,57 @@ func statechart2*[St: enum; Ev: enum; Dm: object; Em: object](
     scName = (if name == "": Opt.none string else: Opt.some name))
 
 func statechart2*[St: enum; Ev: enum; Dm: object; Em: object](
-  name: string,
-  children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+    name: string,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
   initStatechart[St, Ev, Dm, Em](
     scName = (if name == "": Opt.none string else: Opt.some name),
     scChildren = children)
 
 func statechart2*[St: enum; Ev: enum; Dm: object; Em: object](
-  initial: St,
-  children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+    initial: St,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
   initStatechart[St, Ev, Dm, Em](
     scInitial = Opt.some initial,
     scChildren = children)
 
 func statechart3*[St: enum; Ev: enum; Dm: object; Em: object](
-  name: string,
-  initial: St,
-  children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+    name: string,
+    initial: St,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
   initStatechart[St, Ev, Dm, Em](
     scInitial = Opt.some initial,
     scName = (if name == "": Opt.none string else: Opt.some name),
     scChildren = children)
 
-func state0*[St: enum; Ev: enum; Dm: object; Em: object](): auto =
+func anon0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
   initState[St, Ev, Dm, Em]()
 
-func anon0*[St: enum; Ev: enum; Dm: object; Em: object](): auto =
+func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
+    initial: St):
+      auto =
+ initState[St, Ev, Dm, Em](
+   sInitial = Opt.some initial)
+
+func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initState[St, Ev, Dm, Em](
+    sChildren = children)
+
+func anon2*[St: enum; Ev: enum; Dm: object; Em: object](
+    initial: St,
+    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
+      auto =
+  initState[St, Ev, Dm, Em](
+    sInitial = Opt.some initial,
+    sChildren = children)
+
+func state0*[St: enum; Ev: enum; Dm: object; Em: object]():
+      auto =
   initState[St, Ev, Dm, Em]()
 
 func state1*[St: enum; Ev: enum; Dm: object; Em: object](
@@ -192,19 +217,7 @@ func state1*[St: enum; Ev: enum; Dm: object; Em: object](
   initState[St, Ev, Dm, Em](
     sId = Opt.some id)
 
-func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
-    initial: St):
-      auto =
- initState[St, Ev, Dm, Em](
-   sInitial = Opt.some initial)
-
 func state1*[St: enum; Ev: enum; Dm: object; Em: object](
-    children: openArray[StatechartNode[St, Ev, Dm, Em]]):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sChildren = children)
-
-func anon1*[St: enum; Ev: enum; Dm: object; Em: object](
     children: openArray[StatechartNode[St, Ev, Dm, Em]]):
       auto =
   initState[St, Ev, Dm, Em](
@@ -226,14 +239,6 @@ func state2*[St: enum; Ev: enum; Dm: object; Em: object](
     sId = Opt.some id,
     sChildren = children)
 
-func anon2*[St: enum; Ev: enum; Dm: object; Em: object](
-  initial: St,
-  children: openArray[StatechartNode[St, Ev, Dm, Em]]):
-      auto =
-  initState[St, Ev, Dm, Em](
-    sInitial = Opt.some initial,
-    sChildren = children)
-
 func state3*[St: enum; Ev: enum; Dm: object; Em: object](
     id: St,
     initial: St,
@@ -245,10 +250,27 @@ func state3*[St: enum; Ev: enum; Dm: object; Em: object](
     sChildren = children)
 
 const
-  fixableFuncs = toHashSet(["state0"]) # add "state[N]", "parallel[N]", et al.
-  fixableMacros = toHashSet(["state"]) # add "anon", "parallel", et al.
+  fixableFuncs = toHashSet([
+    "anon0", "anon1", "anon2",
+    "state0", "state1", "state2", "state3",
+    "parallel0", "parallel1", "parallel2",
+    "transition0", "transition1", "transition2", "transition3", "transition4",
+      "transition5",
+    "initial0", "initial1",
+    "final0", "final1", "final2",
+    "onEntry0", "onEntry1",
+    "onExit0", "onExit1",
+    "history0", "history1", "history2", "history3"
+  ])
 
-func isFixable(arg: NimNode): bool =
+  fixableMacros = toHashSet([
+    "anon", "state", "parallel", "transition", "initial", "final", "onEntry",
+    "onExit", "history"
+  ])
+
+func isFixable(
+    arg: NimNode):
+      bool =
   when defined(debugMacros):
     debugEcho ""
     debugEcho "isFixable(" & $toStrLit(arg) & ")"
@@ -272,11 +294,10 @@ func isFixable(arg: NimNode): bool =
        (($arg[0] in fixableFuncs) or
         ($arg[0] in fixableMacros)):
     result = true
-  else:
-    result = false
-  debugEcho ""
-  debugEcho result
-  debugEcho ""
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho result
+    debugEcho ""
 
 macro fixup(
     St, Ev, Dm, Em: typedesc,
@@ -362,11 +383,40 @@ macro fixup(
     debugEcho toStrLit result
     debugEcho ""
 
-# overloading an `untyped` parameter is presently unworkable, necessitating the
-# approach below re: macros `statechart`, `state`, `parallel`, et al.
+macro form1(
+    form: static string,
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  let
+    argsLen = args.len
+    form0 = ident(form & "0")
+    form1 = ident(form & "1")
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho ""
+    debugEcho "args.len: " & $argsLen
+    debugEcho ""
+    debugEcho treeRepr args
+  if argsLen == 0:
+    result = quote do:
+      `form0`[`St`, `Ev`, `Dm`, `Em`]()
+  elif argsLen == 1:
+    let
+      arg1 = args[0]
+    result = quote do:
+      `form1`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`)
+  else:
+    raise (ref AssertionDefect)(
+      msg: "macro '" & form &
+           "' accepts at most 1 argument but was invoked with " & $argsLen)
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho toStrLit result
+    debugEcho ""
 
-# broken, e.g. needs to consider some arguments being isFixable,
-# cf. form3WithChildren
 macro form1WithChildren(
     form: static string,
     St, Ev, Dm, Em: typedesc,
@@ -389,29 +439,20 @@ macro form1WithChildren(
   elif argsLen == 1:
     let
       arg1 = args[0]
-    if arg1.isFixable:
-      result = quote do:
-        `form1`[`St`, `Ev`, `Dm`, `Em`](
-          fixup(`St`, `Ev`, `Dm`, `Em`,
-            `arg1`))
-    else:
-      result = quote do:
-        `form1`[`St`, `Ev`, `Dm`, `Em`](
-          `arg1`)
-  else:
-    let
-      arg1 = args[0..<(args.len)]
     result = quote do:
       `form1`[`St`, `Ev`, `Dm`, `Em`](
         fixup(`St`, `Ev`, `Dm`, `Em`,
           `arg1`))
+  else:
+    result = quote do:
+      `form1`[`St`, `Ev`, `Dm`, `Em`](
+        fixup(`St`, `Ev`, `Dm`, `Em`,
+          `args`))
   when defined(debugMacros):
     debugEcho ""
     debugEcho toStrLit result
     debugEcho ""
 
-# broken, e.g. needs to consider some arguments being isFixable,
-# cf. form3WithChildren
 macro form2WithChildren(
     form: static string,
     St, Ev, Dm, Em: typedesc,
@@ -448,26 +489,33 @@ macro form2WithChildren(
     let
       arg1 = args[0]
       arg2 = args[1]
-    if arg2.isFixable:
+    if arg1.isFixable:
       result = quote do:
-        `form2`[`St`, `Ev`, `Dm`, `Em`](
-          `arg1`,
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
           fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg1`,
             `arg2`))
     else:
       result = quote do:
         `form2`[`St`, `Ev`, `Dm`, `Em`](
           `arg1`,
-          `arg2`)
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg2`))
   else:
     let
       arg1 = args[0]
       arg2 = args[1..<(args.len)]
-    result = quote do:
-      `form2`[`St`, `Ev`, `Dm`, `Em`](
-        `arg1`,
-        fixup(`St`, `Ev`, `Dm`, `Em`,
-          `arg2`))
+    if arg1.isFixable:
+      result = quote do:
+        `form1`[`St`, `Ev`, `Dm`, `Em`](
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `args`))
+    else:
+      result = quote do:
+        `form2`[`St`, `Ev`, `Dm`, `Em`](
+          `arg1`,
+          fixup(`St`, `Ev`, `Dm`, `Em`,
+            `arg2`))
   when defined(debugMacros):
     debugEcho ""
     debugEcho toStrLit result
@@ -583,6 +631,88 @@ macro form3WithChildren(
     debugEcho toStrLit result
     debugEcho ""
 
+macro form5(
+    form: static string,
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  let
+    argsLen = args.len
+    form0 = ident(form & "0")
+    form1 = ident(form & "1")
+    form2 = ident(form & "2")
+    form3 = ident(form & "3")
+    form4 = ident(form & "4")
+    form5 = ident(form & "5")
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho ""
+    debugEcho "args.len: " & $argsLen
+    debugEcho ""
+    debugEcho treeRepr args
+  if argsLen == 0:
+    result = quote do:
+      `form0`[`St`, `Ev`, `Dm`, `Em`]()
+  elif argsLen == 1:
+    let
+      arg1 = args[0]
+    result = quote do:
+      `form1`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`)
+  elif argsLen == 2:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+    result = quote do:
+      `form2`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`,
+        `arg2`)
+  elif argsLen == 3:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+      arg3 = args[2]
+    result = quote do:
+      `form3`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`,
+        `arg2`,
+        `arg3`)
+  elif argsLen == 4:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+      arg3 = args[2]
+      arg4 = args[3]
+    result = quote do:
+      `form4`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`,
+        `arg2`,
+        `arg3`,
+        `arg4`)
+  elif argsLen == 5:
+    let
+      arg1 = args[0]
+      arg2 = args[1]
+      arg3 = args[2]
+      arg4 = args[3]
+      arg5 = args[4]
+    result = quote do:
+      `form5`[`St`, `Ev`, `Dm`, `Em`](
+        `arg1`,
+        `arg2`,
+        `arg3`,
+        `arg4`,
+        `arg5`)
+  else:
+    raise (ref AssertionDefect)(
+      msg: "macro '" & form &
+           "' accepts at most 5 arguments but was invoked with " & $argsLen)
+  when defined(debugMacros):
+    debugEcho ""
+    debugEcho toStrLit result
+    debugEcho ""
+
 macro statechart*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
@@ -590,16 +720,6 @@ macro statechart*(
   result = quote do:
     form3WithChildren(
       "statechart",
-      `St`, `Ev`, `Dm`, `Em`,
-      `args`)
-
-macro state*(
-    St, Ev, Dm, Em: typedesc,
-    args: varargs[untyped]):
-      untyped =
-  result = quote do:
-    form3WithChildren(
-      "state",
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
 
@@ -613,6 +733,16 @@ macro anon*(
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
 
+macro state*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form3WithChildren(
+      "state",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
+
 macro parallel*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
@@ -623,7 +753,15 @@ macro parallel*(
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
 
-# macro transition*(): untyped = ...
+macro transition*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form5(
+      "transition",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
 
 macro initial*(
     St, Ev, Dm, Em: typedesc,
@@ -645,9 +783,25 @@ macro final*(
       `St`, `Ev`, `Dm`, `Em`,
       `args`)
 
-# macro onEntry*(): untyped = ...
+macro onEntry*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form1(
+      "onEntry",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
 
-# macro onExit*(): untyped = ...
+macro onExit*(
+    St, Ev, Dm, Em: typedesc,
+    args: varargs[untyped]):
+      untyped =
+  result = quote do:
+    form1(
+      "onExit",
+      `St`, `Ev`, `Dm`, `Em`,
+      `args`)
 
 macro history*(
     St, Ev, Dm, Em: typedesc,
