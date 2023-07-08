@@ -1291,14 +1291,16 @@ macro transition*(
     St, Ev, Dm, Em: typedesc,
     args: varargs[untyped]):
       untyped =
-  debugEcho ""
-  debugEcho "PRINTING NODE TYPES"
-  debugEcho ""
   for i, node in args:
-    debugEcho node.kind
-    if node.kind == nnkStmtListExpr:
+    if node.kind in [nnkBlockStmt, nnkStmtListExpr]:
       args[i] = toStrLit node
-  debugEcho ""
+    elif (node.kind == nnkExprEqExpr) and
+         (node.len > 0) and
+         (node[0].kind == nnkIdent) and
+         ($node[0] in ["cond", "exe"]) and
+         (node.len > 1) and
+         (node[1].kind in [nnkBlockStmt, nnkStmtListExpr]):
+      node[1] = toStrLit node[1]
   result = quote do:
     form5NoChildren(
       "transition",
@@ -1310,8 +1312,15 @@ macro guard*(
     args: varargs[untyped]):
       untyped =
   for i, node in args:
-    if node.kind == nnkBlockStmt:
+    if node.kind in [nnkBlockStmt, nnkStmtListExpr]:
       args[i] = toStrLit node
+    elif (node.kind == nnkExprEqExpr) and
+         (node.len > 0) and
+         (node[0].kind == nnkIdent) and
+         ($node[0] == "cond") and
+         (node.len > 1) and
+         (node[1].kind in [nnkBlockStmt, nnkStmtListExpr]):
+      node[1] = toStrLit node[1]
   result = quote do:
     form4NoChildren(
       "guard",
@@ -1343,8 +1352,15 @@ macro onEntry*(
     args: varargs[untyped]):
       untyped =
   for i, node in args:
-    if node.kind == nnkBlockStmt:
-      args[i] = toStrLit node
+      if node.kind in [nnkBlockStmt, nnkStmtListExpr]:
+        args[i] = toStrLit node
+      elif (node.kind == nnkExprEqExpr) and
+           (node.len > 0) and
+           (node[0].kind == nnkIdent) and
+           ($node[0] == "exe") and
+           (node.len > 1) and
+           (node[1].kind in [nnkBlockStmt, nnkStmtListExpr]):
+        node[1] = toStrLit node[1]
   result = quote do:
     form1NoChildren(
       "onEntry",
@@ -1356,8 +1372,15 @@ macro onExit*(
     args: varargs[untyped]):
       untyped =
   for i, node in args:
-    if node.kind == nnkBlockStmt:
-      args[i] = toStrLit node
+      if node.kind in [nnkBlockStmt, nnkStmtListExpr]:
+        args[i] = toStrLit node
+      elif (node.kind == nnkExprEqExpr) and
+           (node.len > 0) and
+           (node[0].kind == nnkIdent) and
+           ($node[0] == "exe") and
+           (node.len > 1) and
+           (node[1].kind in [nnkBlockStmt, nnkStmtListExpr]):
+        node[1] = toStrLit node[1]
   result = quote do:
     form1NoChildren(
       "onExit",
