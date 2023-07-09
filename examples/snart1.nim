@@ -58,4 +58,12 @@ echo ""
 # actor.send Event(name: toggle)
 # => {active}
 
+# consider timing of `send` above re: `stop` (below) taking effect too soon...
+# does there need to be a final state (and transition to it) in the statechart
+# above, i.e. making it unnecessary to call `stop` manually?
+# or is ordering of events/effects enough in relation to async queue in
+# interpreter/algos?
+# and consider whether `proc stop` *should* result in interpreter loop exiting
+# asap, or only after event queue/s are drained
+
 actor.stop.expect
