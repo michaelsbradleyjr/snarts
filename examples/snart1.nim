@@ -32,7 +32,7 @@ const # or: let
       )])
   ])
 
-  machine = spec.compile.expect("failure not expected")
+  machine = spec.compile.expect
 
 # get rid of the echos
 echo ""
@@ -40,7 +40,7 @@ echo spec
 echo ""
 echo machine
 
-let actor = machine.start.expect("failure not expected")
+let actor = machine.start.expect
 
 # get rid of the echos
 echo ""
@@ -53,4 +53,4 @@ echo ""
 # actor.send Event(name: toggle)
 # => {active}
 
-# actor.stop.expect("failure not expected")
+actor.stop.expect

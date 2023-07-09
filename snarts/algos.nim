@@ -14,6 +14,8 @@ import ./types
 
 export types
 
+const FailureNotExpected = "failure not expected"
+
 # earlier work re: snkTransition nodes was removed in the following commit, but
 # that code can be a reference for how I was building cond/exe procs:
 # https://github.com/michaelsbradleyjr/snarts/commit/67800f9241
@@ -37,6 +39,24 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
     statechart: Statechart[St, Ev, Dm, Em]):
       Result[Machine[St, Ev, Dm, Em], CompilerError] =
   ok Machine[St, Ev, Dm, Em]()
+
+proc expect*[T: object; E: CompilerError](
+    res: Result[T, E],
+    msg = FailureNotExpected):
+      T =
+  results.expect(res, msg)
+
+proc expect*[T: ref object; E: InterpreterError](
+    res: Result[T, E],
+    msg = FailureNotExpected):
+      T =
+  results.expect(res, msg)
+
+proc expect*[E: InterpreterError](
+    res: Result[void, E],
+    msg = FailureNotExpected):
+      void =
+  results.expect(res, msg)
 
 # !! refactor
 # -----------
