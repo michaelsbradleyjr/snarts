@@ -767,20 +767,19 @@ func isFixable(
   when defined(debugMacros):
     debugEcho ""
     debugEcho result
-    debugEcho ""
 
 macro fixup(
     St, Ev, Dm, Em: typedesc,
     children: varargs[untyped]):
       untyped =
   when defined(debugMacros):
-    debugEcho ""
     debugEcho St
     debugEcho Ev
     debugEcho Dm
     debugEcho Em
     debugEcho ""
-    debugEcho "fixup(" & $toStrLit(children) & ")"
+    debugEcho "fixup(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
+      $toStrLit(children) & ")"
     debugEcho ""
     debugEcho "children.len: " & $children.len
     debugEcho ""
@@ -864,7 +863,8 @@ macro form1NoChildren(
     form1 = ident(form & "1")
   when defined(debugMacros):
     debugEcho ""
-    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
+      $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -898,7 +898,8 @@ macro form1WithChildren(
     form1 = ident(form & "1")
   when defined(debugMacros):
     debugEcho ""
-    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
+      $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -935,7 +936,8 @@ macro form2WithChildren(
     form2 = ident(form & "2")
   when defined(debugMacros):
     debugEcho ""
-    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
+      $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -1004,7 +1006,8 @@ macro form3WithChildren(
     form3 = ident(form & "3")
   when defined(debugMacros):
     debugEcho ""
-    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
+      $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -1115,7 +1118,8 @@ macro form4NoChildren(
     form4 = ident(form & "4")
   when defined(debugMacros):
     debugEcho ""
-    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
+      $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -1183,7 +1187,8 @@ macro form5NoChildren(
     form5 = ident(form & "5")
   when defined(debugMacros):
     debugEcho ""
-    debugEcho form & "(" & $toStrLit(args) & ")"
+    debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
+      $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
