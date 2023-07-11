@@ -8,7 +8,10 @@ export algos
 # overloading an `untyped` parameter is presently unworkable, necessitating the
 # approach below re: macros `statechart`, `state`, `parallel`, et al.
 
-macro enforce(T1, T2: typedesc; fieldName: static string): untyped =
+macro enforce(
+    T1, T2: typedesc,
+    fieldName: static string):
+      untyped =
   let field = ident fieldName
   result = quote do:
     static:
