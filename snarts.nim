@@ -354,8 +354,8 @@ func transition2*[St: enum; Ev: enum; Dm: object; Em: object](
     kind: TransitionKind):
       auto =
   initTransition[St, Ev, Dm, Em](
-    tExe = Opt.some Exe(exe),
-    tKind = kind)
+    tKind = kind,
+    tExe = Opt.some Exe(exe))
 
 func transition3*[St: enum; Ev: enum; Dm: object; Em: object](
     event: Ev,
@@ -534,8 +534,8 @@ func guard2*[St: enum; Ev: enum; Dm: object; Em: object](
     cond: string):
       auto =
   initTransition[St, Ev, Dm, Em](
-    tTarget = Opt.some target,
-    tCond = Opt.some Cond(cond))
+    tCond = Opt.some Cond(cond),
+    tTarget = Opt.some target)
 
 func guard2*[St: enum; Ev: enum; Dm: object; Em: object](
     target: St,
