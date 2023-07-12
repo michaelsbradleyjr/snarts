@@ -1,1 +1,0 @@
-func snartImpl*(): bool = true

@@ -6,6 +6,7 @@ license      = "Apache License 2.0 or MIT"
 installDirs  = @["snarts"]
 installFiles = @["LICENSE", "LICENSE-APACHEv2", "LICENSE-MIT", "snarts.nim"]
 
-requires "nim >= 1.9.3",
-         "stew",
+requires "nim >= 1.6.0",
+         "chronos",
+         "results",
          "unittest2"

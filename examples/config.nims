@@ -12,12 +12,22 @@ const
 
 switch("nimcache", cacheSubdir)
 
+# same as defaults for these versions, but convenient for experimentation
+when (NimMajor, NimMinor, NimPatch) < (1, 6, 2):
+  --gc:refc
+# elif (NimMajor, NimMinor) < (2, 0):
+elif (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
+  --mm:refc
+else:
+  --mm:orc
+
 --panics:on
 --threads:on
 --tlsEmulation:off
 
 --hint:"XCannotRaiseY:off"
---warning:"BareExcept:on"
+when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+  --warning:"BareExcept:on"
 
 when defined(release):
   --hints:off
