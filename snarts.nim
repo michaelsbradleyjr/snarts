@@ -8,6 +8,35 @@ export algos
 # overloading an `untyped` parameter is presently unworkable, necessitating the
 # approach below re: macros `statechart`, `state`, `parallel`, et al.
 
+func `==`*[St, Ev, Dm, Em](
+    a, b: StatechartNode[St, Ev, Dm, Em]):
+      bool =
+  if a.kind != b.kind:
+    result = false
+  else:
+    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+      {.push warning[BareExcept]: off.}
+    case a.kind
+    of snkState:
+      try:
+        result = (
+          (a.sId == b.sId) and
+          (a.sInitial == b.sInitial) and
+          (a.sChildren == b.sChildren))
+      except Exception as e:
+        raise (ref Defect)(msg: e.msg)
+    else:
+      result = false
+    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+      {.pop.}
+
+func `==`*[St, Ev, Dm, Em](
+    a, b: Statechart[St, Ev, Dm, Em]):
+      bool =
+  (a.scInitial == b.scInitial) and
+  (a.scName == b.scName) and
+  (a.scChildren == b.scChildren)
+
 macro enforce(
     T1, T2: typedesc,
     fieldName: static string):
