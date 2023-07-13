@@ -24,7 +24,7 @@ requires "https://github.com/michaelsbradleyjr/snarts#head"
 
 ## Stability
 
-This package is currently marked as experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
+This package is currently experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
 
 ## License
 
