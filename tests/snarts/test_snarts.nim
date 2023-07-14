@@ -6,15 +6,16 @@ import pkg/unittest2
 
 suite "DSL front-end":
   # this suite is not testing the construction of valid statecharts; rather,
-  # it's testing that usages of macros `statechart`, `state`, et al.  produce
-  # the expected instances of types `Statechart` and `StatechartNode`
+  # it's testing that usages of macros `statechart`, `state`, et al., and the
+  # macros they call in turn, produce the expected instances of types
+  # `Statechart` and `StatechartNode`
 
   type
     States = enum
       st1, st2
 
     Events = enum
-      evA, evB
+      evA
 
     Data = object
       id: States
@@ -523,10 +524,229 @@ suite "DSL front-end":
     discard
 
   test "initial":
-    discard
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        initial())
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkInitial,
+            iChildren: @[])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        initial(
+          [aCall(), aChild, initial()]))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkInitial,
+            iChildren: @[
+              aCall(),
+              aChild,
+              initial(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        initial(
+          aCall()))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkInitial,
+            iChildren: @[
+              aCall()])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        initial(
+          aChild))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkInitial,
+            iChildren: @[
+              aChild])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        initial(
+          initial()))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkInitial,
+            iChildren: @[
+              initial(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        initial(
+          aCall(),
+          aChild,
+          initial()))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkInitial,
+            iChildren: @[
+              aCall(),
+              aChild,
+              initial(States, Events, Data, Event)])])
+
+    check: chart == chexp
 
   test "final":
-    discard
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        final())
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkFinal,
+            fId: Opt.none States,
+            fChildren: @[])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        final(
+          st1))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkFinal,
+            fId: Opt.some st1,
+            fChildren: @[])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        final(
+          [aCall(), aChild, final()]))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkFinal,
+            fId: Opt.none States,
+            fChildren: @[
+              aCall(),
+              aChild,
+              final(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        final(
+          st1,
+          [aCall(), aChild, final()]))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkFinal,
+            fId: Opt.some st1,
+            fChildren: @[
+              aCall(),
+              aChild,
+              final(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        final(
+          id = st1,
+          [aCall(), aChild, final()]))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkFinal,
+            fId: Opt.some st1,
+            fChildren: @[
+              aCall(),
+              aChild,
+              final(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        final(
+          id = st1,
+          aCall(),
+          aChild,
+          final()))
+
+    check: chart == chexp
 
   test "onEntry":
     discard
