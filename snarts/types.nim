@@ -42,17 +42,6 @@ export results
 #     typeof(`exe`)
 
 type
-  Cond* = distinct string
-
-  Exe* = distinct string
-
-func `$`*(x: Cond): string =
-  x.string
-
-func `$`*(x: Exe): string =
-  x.string
-
-type
   # placeholder
   Actor[St: enum; Ev: enum; Dm: object; Em: object] = object
 
@@ -76,9 +65,13 @@ type
     events*: string
     states*: string
 
+  Cond* = distinct string
+
   # ?? do the members need to carry more information, e.g. State objects per
   # the disabled code below
   Configuration*[St: enum] = OrderedSet[St]
+
+  Exe* = distinct string
 
   HistoryKind* = enum
     hkShallow, hkDeep
@@ -169,3 +162,79 @@ type
   ValidationDefect* = object of Defect
 
   ValidationError* = object of CatchableError
+
+func `$`*(x: Cond): string =
+  x.string
+
+func `$`*(x: Exe): string =
+  x.string
+
+func `==`*(a, b: Cond): bool =
+  a.string == b.string
+
+func `==`*(a, b: Exe): bool =
+  a.string == b.string
+
+func `==`*[St, Ev, Dm, Em](
+    a, b: StatechartNode[St, Ev, Dm, Em]):
+      bool =
+  if a.kind != b.kind:
+    result = false
+  else:
+    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+      {.push warning[BareExcept]: off.}
+    case a.kind
+    of snkState:
+      try:
+        result = (
+          (a.sId == b.sId) and
+          (a.sInitial == b.sInitial) and
+          (a.sChildren == b.sChildren))
+      except Exception as e:
+        raise (ref Defect)(msg: e.msg)
+    of snkParallel:
+      try:
+        result = (
+          (a.pId == b.pId) and
+          (a.pChildren == b.pChildren))
+      except Exception as e:
+        raise (ref Defect)(msg: e.msg)
+    of snkTransition:
+      try:
+        result = (
+          (a.tEvent == b.tEvent) and
+          (a.tCond == b.tCond) and
+          (a.tTarget == b.tTarget) and
+          (a.tKind == b.tKind) and
+          (a.tExe == b.tExe))
+      except Exception as e:
+        raise (ref Defect)(msg: e.msg)
+    of snkInitial:
+      try:
+        result = (
+          a.iChildren == b.iChildren)
+      except Exception as e:
+        raise (ref Defect)(msg: e.msg)
+    of snkFinal:
+      try:
+        result = (
+          (a.fId == b.fId) and
+          (a.fChildren == b.fChildren))
+      except Exception as e:
+        raise (ref Defect)(msg: e.msg)
+    of snkOnEntry, snkOnExit:
+      try:
+        result = (
+          a.oExe == b.oExe)
+      except Exception as e:
+        raise (ref Defect)(msg: e.msg)
+    of snkHistory:
+      try:
+        result = (
+          (a.hId == b.hId) and
+          (a.hKind == b.hKind) and
+          (a.hChildren == b.hChildren))
+      except Exception as e:
+        raise (ref Defect)(msg: e.msg)
+    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+      {.pop.}
