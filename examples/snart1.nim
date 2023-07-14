@@ -19,23 +19,24 @@ const # or: let
   spec = statechart(
     States, Events, Data, Event,
     name = "snart1",
-    initial = inactive,
-    state(
-      id = active,
-      transition(
-        event = toggle,
-        target = inactive,
-        exe = block:
-          debugEcho config
-    )),
-    state(
-      id = inactive,
-      transition(
-        event = toggle,
-        target = active,
-        exe = block:
-          debugEcho config
-  )))
+    initial = inactive, [
+      state(
+        id = active, [
+          transition(
+            event = toggle,
+            target = inactive,
+            exe = block:
+              debugEcho config
+      )]),
+      state(
+        id = inactive, [
+          transition(
+            event = toggle,
+            target = active,
+            exe = block:
+              debugEcho config
+      )])
+  ])
 
   machine = spec.compile.expect
 
