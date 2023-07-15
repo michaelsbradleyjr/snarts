@@ -1,3 +1,4 @@
+import std/macros
 import pkg/snarts
 import pkg/unittest2
 
@@ -33,6 +34,11 @@ suite "DSL front-end":
     state(
       States, Events, Data, Event,
       st2)
+
+  macro toString(x: untyped): string =
+    let s = toStrLit x
+    result = quote do:
+      `s`
 
   var
     chart =
@@ -749,10 +755,72 @@ suite "DSL front-end":
     check: chart == chexp
 
   test "onEntry":
-    discard
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        onEntry())
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkOnEntry,
+            oExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        onEntry(
+          block: debugEcho config))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkOnEntry,
+            oExe: Opt.some Exe(toString(block: debugEcho config)))])
+
+    check: chart == chexp
 
   test "onExit":
-    discard
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        onExit())
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkOnExit,
+            oExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        onExit(
+          block: debugEcho config))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkOnExit,
+            oExe: Opt.some Exe(toString(block: debugEcho config)))])
+
+    check: chart == chexp
 
   test "history":
     chart =
