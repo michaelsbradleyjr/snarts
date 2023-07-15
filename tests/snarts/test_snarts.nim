@@ -755,7 +755,185 @@ suite "DSL front-end":
     discard
 
   test "history":
-    discard
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history())
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkHistory,
+            hId: Opt.none States,
+            hKind: hkShallow,
+            hChildren: @[])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history(
+          st1))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkHistory,
+            hId: Opt.some st1,
+            hKind: hkShallow,
+            hChildren: @[])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history(
+          hkDeep))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkHistory,
+            hId: Opt.none States,
+            hKind: hkDeep,
+            hChildren: @[])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history(
+          [aCall(), aChild, history()]))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkHistory,
+            hId: Opt.none States,
+            hKind: hkShallow,
+            hChildren: @[
+              aCall(),
+              aChild,
+              history(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history(
+          st1,
+          hkDeep))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkHistory,
+            hId: Opt.some st1,
+            hKind: hkDeep,
+            hChildren: @[])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history(
+          st1,
+          [aCall(), aChild, history()]))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkHistory,
+            hId: Opt.some st1,
+            hKind: hkShallow,
+            hChildren: @[
+              aCall(),
+              aChild,
+              history(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history(
+          hkDeep,
+          [aCall(), aChild, history()]))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkHistory,
+            hId: Opt.none States,
+            hKind: hkDeep,
+            hChildren: @[
+              aCall(),
+              aChild,
+              history(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history(
+          kind = hkDeep,
+          id = st1,
+          [aCall(), aChild, history()]))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkHistory,
+            hId: Opt.some st1,
+            hKind: hkDeep,
+            hChildren: @[
+              aCall(),
+              aChild,
+              history(States, Events, Data, Event)])])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        history(
+          kind = hkDeep,
+          id = st1,
+          aCall(),
+          aChild,
+          history()))
+
+    check: chart == chexp
 
 suite "Validation":
   test "statechart must have one or more children":
