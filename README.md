@@ -6,7 +6,7 @@
 [![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/snarts/workflows/Builds/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/snarts/actions?query=workflow%3ABuilds+branch%3Amaster)
 [![codecov](https://codecov.io/github/michaelsbradleyjr/snarts/branch/master/graph/badge.svg?token=AROG63USFC)](https://codecov.io/github/michaelsbradleyjr/snarts)
 
-Executable Statecharts for [Nim](https://nim-lang.org).
+Executable [Statecharts](https://en.wikipedia.org/wiki/State_diagram#Harel_statechart) for [Nim](https://nim-lang.org).
 
 ## Installation
 
