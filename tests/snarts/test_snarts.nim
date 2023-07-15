@@ -24,9 +24,16 @@ suite "DSL front-end":
     Event = object
       name: Events
 
+  macro toString(x: untyped): string =
+    let s = toStrLit x
+    result = quote do:
+      `s`
+
   let
     aChild = state(States, Events, Data, Event)
+    aCond = Cond(toString((block: debugEcho config)))
     aEvent = evA
+    aExe = Exe(toString((block: debugEcho config)))
     aName = "test"
     aState = st1
 
@@ -34,11 +41,6 @@ suite "DSL front-end":
     state(
       States, Events, Data, Event,
       st2)
-
-  macro toString(x: untyped): string =
-    let s = toStrLit x
-    result = quote do:
-      `s`
 
   var
     chart =
@@ -524,7 +526,545 @@ suite "DSL front-end":
     check: chart == chexp
 
   test "transition":
-    discard
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition())
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.none Cond,
+            tTarget: Opt.none States,
+            tKind: tkExternal,
+            tExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.none Cond,
+            tTarget: Opt.none States,
+            tKind: tkExternal,
+            tExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          st1))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.none Cond,
+            tTarget: Opt.some st1,
+            tKind: tkExternal,
+            tExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          (block: debugEcho config)))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.none Cond,
+            tTarget: Opt.none States,
+            tKind: tkExternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.none Cond,
+            tTarget: Opt.none States,
+            tKind: tkInternal,
+            tExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          st1))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.none Cond,
+            tTarget: Opt.some st1,
+            tKind: tkExternal,
+            tExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          (block: debugEcho config)))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.none Cond,
+            tTarget: Opt.none States,
+            tKind: tkExternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.none Cond,
+            tTarget: Opt.none States,
+            tKind: tkInternal,
+            tExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          st1,
+          (block: debugEcho config)))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.none Cond,
+            tTarget: Opt.some st1,
+            tKind: tkExternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          st1,
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.none Cond,
+            tTarget: Opt.some st1,
+            tKind: tkInternal,
+            tExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          (block: debugEcho config),
+          (block: debugEcho config)))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.some aCond,
+            tTarget: Opt.none States,
+            tKind: tkExternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          (block: debugEcho config),
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.none Cond,
+            tTarget: Opt.none States,
+            tKind: tkInternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          st1,
+          (block: debugEcho config)))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.none Cond,
+            tTarget: Opt.some st1,
+            tKind: tkExternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          st1,
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.none Cond,
+            tTarget: Opt.some st1,
+            tKind: tkInternal,
+            tExe: Opt.none Exe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          (block: debugEcho config),
+          (block: debugEcho config)))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.some aCond,
+            tTarget: Opt.none States,
+            tKind: tkExternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          (block: debugEcho config),
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.none Cond,
+            tTarget: Opt.none States,
+            tKind: tkInternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          st1,
+          (block: debugEcho config),
+          (block: debugEcho config)))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.some aCond,
+            tTarget: Opt.some st1,
+            tKind: tkExternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          st1,
+          (block: debugEcho config),
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.none Cond,
+            tTarget: Opt.some st1,
+            tKind: tkInternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          (block: debugEcho config),
+          (block: debugEcho config),
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.some aCond,
+            tTarget: Opt.none States,
+            tKind: tkInternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          st1,
+          (block: debugEcho config),
+          (block: debugEcho config)))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.some aCond,
+            tTarget: Opt.some st1,
+            tKind: tkExternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          st1,
+          (block: debugEcho config),
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.none Cond,
+            tTarget: Opt.some st1,
+            tKind: tkInternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          st1,
+          (block: debugEcho config),
+          (block: debugEcho config),
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.none Events,
+            tCond: Opt.some aCond,
+            tTarget: Opt.some st1,
+            tKind: tkInternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          evA,
+          st1,
+          (block: debugEcho config),
+          (block: debugEcho config),
+          tkInternal))
+
+    chexp =
+      Statechart[States, Events, Data, Event](
+        scInitial: Opt.none States,
+        scName: Opt.none string,
+        scChildren: @[
+          StatechartNode[States, Events, Data, Event](
+            kind: snkTransition,
+            tEvent: Opt.some evA,
+            tCond: Opt.some aCond,
+            tTarget: Opt.some st1,
+            tKind: tkInternal,
+            tExe: Opt.some aExe)])
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          event = aEvent,
+          target = aState,
+          cond = (block: debugEcho config),
+          exe = (block: debugEcho config),
+          kind = tkInternal))
+
+    check: chart == chexp
+
+    chart =
+      statechart(
+        States, Events, Data, Event,
+        transition(
+          exe = (block: debugEcho config),
+          target = aState,
+          event = aEvent,
+          kind = tkInternal,
+          cond = (block: debugEcho config)))
+
+    check: chart == chexp
 
   test "guard":
     discard
@@ -775,7 +1315,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         onEntry(
-          block: debugEcho config))
+          (block: debugEcho config)))
 
     chexp =
       Statechart[States, Events, Data, Event](
@@ -784,7 +1324,7 @@ suite "DSL front-end":
         scChildren: @[
           StatechartNode[States, Events, Data, Event](
             kind: snkOnEntry,
-            oExe: Opt.some Exe(toString(block: debugEcho config)))])
+            oExe: Opt.some aExe)])
 
     check: chart == chexp
 
@@ -809,7 +1349,7 @@ suite "DSL front-end":
       statechart(
         States, Events, Data, Event,
         onExit(
-          block: debugEcho config))
+          (block: debugEcho config)))
 
     chexp =
       Statechart[States, Events, Data, Event](
@@ -818,7 +1358,7 @@ suite "DSL front-end":
         scChildren: @[
           StatechartNode[States, Events, Data, Event](
             kind: snkOnExit,
-            oExe: Opt.some Exe(toString(block: debugEcho config)))])
+            oExe: Opt.some aExe)])
 
     check: chart == chexp
 
