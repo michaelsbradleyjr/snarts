@@ -2,8 +2,8 @@ import std/macros
 import pkg/snarts
 import pkg/unittest2
 
-# in tests `let` is preferred to `const` because the latter does not generate
-# coverage data
+# in tests `let` is preferred to `const` for defining `type Statechart`
+# instances because usage of `const` does not generate coverage data
 
 suite "DSL front-end":
   # this suite is not testing the construction of valid statecharts; rather,
@@ -1914,7 +1914,3 @@ suite "DSL front-end":
           history()))
 
     check: chart == chexp
-
-suite "Validation":
-  test "statechart must have one or more children":
-    check: true
