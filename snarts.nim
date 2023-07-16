@@ -500,7 +500,7 @@ func guard1*[St: enum; Ev: enum; Dm: object; Em: object](
     cond: string):
       auto =
   initTransition[St, Ev, Dm, Em](
-    tCond = Opt.some Exe(exe))
+    tCond = Opt.some Cond(cond))
 
 func guard1*[St: enum; Ev: enum; Dm: object; Em: object](
     kind: TransitionKind):
