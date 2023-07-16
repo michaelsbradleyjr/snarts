@@ -114,7 +114,7 @@ type
   #     hId*: Opt[St]
   #     hKind*: HistoryKind
 
-  Statechart*[St: enum; Ev: enum; Dm: object; Em: object] = object
+  Statechart*[St: enum; Ev: enum; Dm: object; Em: object] {.pure.} = object
     scInitial*: Opt[St]
     scName*: Opt[string]
     scChildren*: seq[StatechartNode[St, Ev, Dm, Em]]
@@ -129,7 +129,7 @@ type
     snkOnExit
     snkHistory
 
-  StatechartNode*[St: enum; Ev: enum; Dm: object; Em: object] = object
+  StatechartNode*[St: enum; Ev: enum; Dm: object; Em: object] {.pure.} = object
     case kind*: StatechartNodeKind
     of snkState:
       sId*: Opt[St]
