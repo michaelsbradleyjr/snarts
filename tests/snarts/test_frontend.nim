@@ -43,47 +43,47 @@ suite "DSL front-end":
       st2)
 
   var
-    chart =
+    spec =
       statechart(States, Events, Data, Event)
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event]()
 
   test "statechart":
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         "test")
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.some "test",
         scChildren: @[])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         st1)
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.some st1,
         scName: Opt.none string,
         scChildren: @[])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         [aCall(), aChild, state()])
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -92,29 +92,29 @@ suite "DSL front-end":
           aChild,
           state(States, Events, Data, Event)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         "test",
         st1)
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.some st1,
         scName: Opt.some "test",
         scChildren: @[])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         "test",
         [aCall(), aChild, state()])
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.some "test",
@@ -123,15 +123,15 @@ suite "DSL front-end":
           aChild,
           state(States, Events, Data, Event)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         st1,
         [aCall(), aChild, state()])
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.some st1,
         scName: Opt.none string,
@@ -140,16 +140,16 @@ suite "DSL front-end":
           aChild,
           state(States, Events, Data, Event)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         aName,
         aState,
         [aCall(), aChild, state()])
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.some aState,
         scName: Opt.some aName,
@@ -158,18 +158,18 @@ suite "DSL front-end":
           aChild,
           state(States, Events, Data, Event)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         initial = aState,
         name = aName,
         [aCall(), aChild, state()])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         initial = aState,
@@ -178,15 +178,15 @@ suite "DSL front-end":
         aChild,
         state())
 
-    check: chart == chexp
+    check: spec == spex
 
   test "state":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         state())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -197,15 +197,15 @@ suite "DSL front-end":
             sInitial: Opt.none States,
             sChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         state(
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -216,15 +216,15 @@ suite "DSL front-end":
             sInitial: Opt.none States,
             sChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         state(
           [aCall(), aChild, state()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -238,16 +238,16 @@ suite "DSL front-end":
               aChild,
               state(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         state(
           st1,
           st2))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -258,16 +258,16 @@ suite "DSL front-end":
             sInitial: Opt.some st2,
             sChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         state(
           st1,
           [aCall(), aChild, state()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -281,9 +281,9 @@ suite "DSL front-end":
               aChild,
               state(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         state(
@@ -291,7 +291,7 @@ suite "DSL front-end":
           id = st1,
           [aCall(), aChild, state()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -305,9 +305,9 @@ suite "DSL front-end":
               aChild,
               state(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         state(
@@ -317,15 +317,15 @@ suite "DSL front-end":
           aChild,
           state()))
 
-    check: chart == chexp
+    check: spec == spex
 
   test "anon":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         anon())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -336,15 +336,15 @@ suite "DSL front-end":
             sInitial: Opt.none States,
             sChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         anon(
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -355,15 +355,15 @@ suite "DSL front-end":
             sInitial: Opt.some st1,
             sChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         anon(
           [aCall(), aChild, anon()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -377,16 +377,16 @@ suite "DSL front-end":
               aChild,
               anon(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         anon(
           st1,
           [aCall(), aChild, anon()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -400,9 +400,9 @@ suite "DSL front-end":
               aChild,
               anon(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         anon(
@@ -411,15 +411,15 @@ suite "DSL front-end":
           aChild,
           anon()))
 
-    check: chart == chexp
+    check: spec == spex
 
   test "parallel":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         parallel())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -429,15 +429,15 @@ suite "DSL front-end":
             pId: Opt.none States,
             pChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         parallel(
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -447,15 +447,15 @@ suite "DSL front-end":
             pId: Opt.some st1,
             pChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         parallel(
           [aCall(), aChild, parallel()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -468,16 +468,16 @@ suite "DSL front-end":
               aChild,
               parallel(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         parallel(
           st1,
           [aCall(), aChild, parallel()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -490,16 +490,16 @@ suite "DSL front-end":
               aChild,
               parallel(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         parallel(
           id = st1,
           [aCall(), aChild, parallel()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -512,9 +512,9 @@ suite "DSL front-end":
               aChild,
               parallel(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         parallel(
@@ -523,15 +523,15 @@ suite "DSL front-end":
           aChild,
           parallel()))
 
-    check: chart == chexp
+    check: spec == spex
 
   test "transition":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -544,15 +544,15 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           evA))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -565,15 +565,15 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -586,15 +586,15 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -607,15 +607,15 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -628,16 +628,16 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           evA,
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -650,16 +650,16 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           evA,
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -672,16 +672,16 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           evA,
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -694,16 +694,16 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           st1,
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -716,16 +716,16 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           st1,
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -738,16 +738,16 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           (block: debugEcho config),
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -760,16 +760,16 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -782,9 +782,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -792,7 +792,7 @@ suite "DSL front-end":
           st1,
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -805,9 +805,9 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -815,7 +815,7 @@ suite "DSL front-end":
           st1,
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -828,9 +828,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -838,7 +838,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -851,9 +851,9 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -861,7 +861,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -874,9 +874,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -884,7 +884,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -897,9 +897,9 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -907,7 +907,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -920,9 +920,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -930,7 +930,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -943,9 +943,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -954,7 +954,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -967,9 +967,9 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -978,7 +978,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -991,9 +991,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -1002,7 +1002,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1015,9 +1015,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -1027,7 +1027,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1040,9 +1040,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -1052,9 +1052,9 @@ suite "DSL front-end":
           exe = (block: debugEcho config),
           kind = tkInternal))
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         transition(
@@ -1064,15 +1064,15 @@ suite "DSL front-end":
           kind = tkInternal,
           cond = (block: debugEcho config)))
 
-    check: chart == chexp
+    check: spec == spex
 
   test "guard":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1085,15 +1085,15 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           evA))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1106,15 +1106,15 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1127,15 +1127,15 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1148,15 +1148,15 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1169,16 +1169,16 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           evA,
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1191,16 +1191,16 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           evA,
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1213,16 +1213,16 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           evA,
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1235,16 +1235,16 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           st1,
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1257,16 +1257,16 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           st1,
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1279,16 +1279,16 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1301,9 +1301,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
@@ -1311,7 +1311,7 @@ suite "DSL front-end":
           st1,
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1324,9 +1324,9 @@ suite "DSL front-end":
             tKind: tkExternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
@@ -1334,7 +1334,7 @@ suite "DSL front-end":
           st1,
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1347,9 +1347,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
@@ -1357,7 +1357,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1370,9 +1370,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
@@ -1380,7 +1380,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1393,9 +1393,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
@@ -1404,7 +1404,7 @@ suite "DSL front-end":
           (block: debugEcho config),
           tkInternal))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1417,9 +1417,9 @@ suite "DSL front-end":
             tKind: tkInternal,
             tExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
@@ -1428,9 +1428,9 @@ suite "DSL front-end":
           cond = (block: debugEcho config),
           kind = tkInternal))
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         guard(
@@ -1439,15 +1439,15 @@ suite "DSL front-end":
           kind = tkInternal,
           cond = (block: debugEcho config)))
 
-    check: chart == chexp
+    check: spec == spex
 
   test "initial":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         initial())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1456,15 +1456,15 @@ suite "DSL front-end":
             kind: snkInitial,
             iChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         initial(
           [aCall(), aChild, initial()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1476,15 +1476,15 @@ suite "DSL front-end":
               aChild,
               initial(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         initial(
           aCall()))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1494,15 +1494,15 @@ suite "DSL front-end":
             iChildren: @[
               aCall()])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         initial(
           aChild))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1512,15 +1512,15 @@ suite "DSL front-end":
             iChildren: @[
               aChild])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         initial(
           initial()))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1530,9 +1530,9 @@ suite "DSL front-end":
             iChildren: @[
               initial(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         initial(
@@ -1540,7 +1540,7 @@ suite "DSL front-end":
           aChild,
           initial()))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1552,15 +1552,15 @@ suite "DSL front-end":
               aChild,
               initial(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
   test "final":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         final())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1570,15 +1570,15 @@ suite "DSL front-end":
             fId: Opt.none States,
             fChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         final(
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1588,15 +1588,15 @@ suite "DSL front-end":
             fId: Opt.some st1,
             fChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         final(
           [aCall(), aChild, final()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1609,16 +1609,16 @@ suite "DSL front-end":
               aChild,
               final(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         final(
           st1,
           [aCall(), aChild, final()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1631,16 +1631,16 @@ suite "DSL front-end":
               aChild,
               final(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         final(
           id = st1,
           [aCall(), aChild, final()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1653,9 +1653,9 @@ suite "DSL front-end":
               aChild,
               final(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         final(
@@ -1664,15 +1664,15 @@ suite "DSL front-end":
           aChild,
           final()))
 
-    check: chart == chexp
+    check: spec == spex
 
   test "onEntry":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         onEntry())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1681,15 +1681,15 @@ suite "DSL front-end":
             kind: snkOnEntry,
             oExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         onEntry(
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1698,15 +1698,15 @@ suite "DSL front-end":
             kind: snkOnEntry,
             oExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
   test "onExit":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         onExit())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1715,15 +1715,15 @@ suite "DSL front-end":
             kind: snkOnExit,
             oExe: Opt.none Exe)])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         onExit(
           (block: debugEcho config)))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1732,15 +1732,15 @@ suite "DSL front-end":
             kind: snkOnExit,
             oExe: Opt.some aExe)])
 
-    check: chart == chexp
+    check: spec == spex
 
   test "history":
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history())
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1751,15 +1751,15 @@ suite "DSL front-end":
             hKind: hkShallow,
             hChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history(
           st1))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1770,15 +1770,15 @@ suite "DSL front-end":
             hKind: hkShallow,
             hChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history(
           hkDeep))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1789,15 +1789,15 @@ suite "DSL front-end":
             hKind: hkDeep,
             hChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history(
           [aCall(), aChild, history()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1811,16 +1811,16 @@ suite "DSL front-end":
               aChild,
               history(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history(
           st1,
           hkDeep))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1831,16 +1831,16 @@ suite "DSL front-end":
             hKind: hkDeep,
             hChildren: @[])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history(
           st1,
           [aCall(), aChild, history()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1854,16 +1854,16 @@ suite "DSL front-end":
               aChild,
               history(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history(
           hkDeep,
           [aCall(), aChild, history()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1877,9 +1877,9 @@ suite "DSL front-end":
               aChild,
               history(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history(
@@ -1887,7 +1887,7 @@ suite "DSL front-end":
           id = st1,
           [aCall(), aChild, history()]))
 
-    chexp =
+    spex =
       Statechart[States, Events, Data, Event](
         scInitial: Opt.none States,
         scName: Opt.none string,
@@ -1901,9 +1901,9 @@ suite "DSL front-end":
               aChild,
               history(States, Events, Data, Event)])])
 
-    check: chart == chexp
+    check: spec == spex
 
-    chart =
+    spec =
       statechart(
         States, Events, Data, Event,
         history(
@@ -1913,4 +1913,4 @@ suite "DSL front-end":
           aChild,
           history()))
 
-    check: chart == chexp
+    check: spec == spex
