@@ -107,7 +107,7 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
     else:
       "anonymous"
   if spec.scChildren.len == 0:
-    errors.add ValidationError(msg: "statechart has no child states")
+    errors.add ValidationError(msg: "statechart has no child nodes")
   if errors.len > 0:
     err CompilerError(
       msg: "Statechart[" & $spec.St & ", " & $spec.Ev & ", " & $spec.Dm & ", " &

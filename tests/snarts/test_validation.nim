@@ -24,4 +24,4 @@ suite "Validation":
     check:
       res.isErr
       res.error.errors.len == 1
-      "has no child states" in res.error.errors[0].msg
+      "has no child nodes" in res.error.errors[0].msg
