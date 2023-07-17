@@ -3,60 +3,26 @@
 # W3C Recommendation 01 September 2015
 
 # TODO
-# * name interpreter `proc start` instead of `proc interpret`
 # * try to use `AsyncEventQueue` for the blocking queue in the interpreter:
 #   https://github.com/status-im/nim-chronos/blob/master/chronos/asyncsync.nim#L690
+# * earlier work re: snkTransition nodes was removed in the following commit,
+#   but that code can be a reference for how I was building cond/exe procs:
+#   https://github.com/michaelsbradleyjr/snarts/commit/67800f9241
 
 {.push raises: [].}
 
-# import std/[sets, strutils, tables]
+# import std/[sets, tables]
 import ./types
 
 export types
 
 const FailureNotExpected = "failure not expected"
 
-# earlier work re: snkTransition nodes was removed in the following commit, but
-# that code can be a reference for how I was building cond/exe procs:
-# https://github.com/michaelsbradleyjr/snarts/commit/67800f9241
-
-# don't delete: may be used eventually or may prove unnecessary
-# -------------------------------------------------------------
-# proc box[T](x: T): ref T =
-#   new result
-#   result[] = x
-#
-# proc unbox[T](x: ref T): T =
-#   result = x[]
-
-# func wrap(s: string): string =
-#   if s == "anonymous":
-#     "<<" & s & ">>"
-#   else:
-#     "\"" & s & "\""
-
-func compile*[St: enum; Ev: enum; Dm: object; Em: object](
-    statechart: Statechart[St, Ev, Dm, Em]):
-      Result[Machine[St, Ev, Dm, Em], CompilerError] =
-  ok Machine[St, Ev, Dm, Em]()
-
-proc expect*[T: object; E: CompilerError](
-    res: Result[T, E],
-    msg = FailureNotExpected):
-      T =
-  results.expect(res, msg)
-
-proc expect*[T: ref object; E: InterpreterError](
-    res: Result[T, E],
-    msg = FailureNotExpected):
-      T =
-  results.expect(res, msg)
-
-proc expect*[E: InterpreterError](
-    res: Result[void, E],
-    msg = FailureNotExpected):
-      void =
-  results.expect(res, msg)
+func wrap(s: string): string =
+  if s == "anonymous":
+    "<<" & s & ">>"
+  else:
+    "'" & s & "'"
 
 # !! refactor
 # -----------
@@ -131,29 +97,67 @@ proc expect*[E: InterpreterError](
 #     let computer = Machine[T](data: T.init)
 #     ok computer # Radiohead 1997, what a year!
 
+func compile*[St: enum; Ev: enum; Dm: object; Em: object](
+    spec: Statechart[St, Ev, Dm, Em]):
+      Result[Machine[St, Ev, Dm, Em], CompilerError] =
+  var errors: seq[ValidationError]
+  let specName =
+    if spec.scName.isSome:
+      spec.scName.get
+    else:
+      "anonymous"
+  if spec.scChildren.len == 0:
+    errors.add ValidationError(msg: "statechart has no child states")
+  if errors.len > 0:
+    err CompilerError(
+      msg: "Statechart[" & $spec.St & ", " & $spec.Ev & ", " & $spec.Dm & ", " &
+           $spec.Em & "] " & specName.wrap & " is invalid:",
+      errors: errors,
+      specName: specName,
+      states: $spec.St,
+      events: $spec.Ev,
+      dataModel: $spec.Dm,
+      eventModel: $spec.Em)
+  else:
+    # mixin init
+    # let computer = Machine[St, Ev, Dm, Em](data: Dm.init)
+    let computer = Machine[St, Ev, Dm, Em]()
+    ok computer # Radiohead 1997, what a year!
+
+func validationDefectMsg(e: CompilerError): string =
+  var msg = "\n" & e.msg & "\n"
+  for i, error in e.errors.pairs:
+    msg &= " [" & $(i + 1) & "] " & error.msg & "\n"
+  msg
+
+proc expect*[St: enum; Ev: enum; Dm: object; Em: object; E: CompilerError](
+    res: Result[Machine[St, Ev, Dm, Em], E],
+    msg = FailureNotExpected):
+      Machine[St, Ev, Dm, Em] =
+  if res.isOk:
+    res.get
+  else:
+    raise (ref ValidationDefect)(
+      msg: msg & ": " & res.error.validationDefectMsg)
+
+proc expect*[St: enum; Ev: enum; Dm: object; Em: object; E: InterpreterError](
+  res: Result[ref Actor[St, Ev, Dm, Em], E],
+  msg = FailureNotExpected):
+    ref Actor[St, Ev, Dm, Em] =
+  results.expect(res, msg)
+
+proc expect*[E: InterpreterError](
+    res: Result[void, E],
+    msg = FailureNotExpected):
+      void =
+  results.expect(res, msg)
+
 proc start*[St: enum; Ev: enum; Dm: object; Em: object](
-    machine: Machine[St, Ev, Dm, Em]):
-      Result[ActorRef[St, Ev, Dm, Em], InterpreterError] =
-  ok ActorRef[St, Ev, Dm, Em]()
+  machine: Machine[St, Ev, Dm, Em]):
+    Result[ref Actor[St, Ev, Dm, Em], InterpreterError] =
+  ok (ref Actor[St, Ev, Dm, Em])()
 
 proc stop*[St: enum; Ev: enum; Dm: object; Em: object](
-  actor: ActorRef[St, Ev, Dm, Em]):
+  actor: ref Actor[St, Ev, Dm, Em]):
     Result[void, InterpreterError] =
   ok()
-
-# !! refactor
-# -----------
-# proc tryGet*[T](machineRes: Result[Machine[T], CompilerError]): Machine[T] =
-#   if machineRes.isOk:
-#     machineRes.get
-#   else:
-#     let error = machineRes.unsafeError
-#     var msg = "\n\nStatechart[" & error.model & "] " & error.spec.wrap & " had "
-#     if error.errors.len > 1:
-#       msg &= "validation errors\n"
-#       for i, error in error.errors.pairs:
-#         msg &= " [" & $(i + 1) & "] " & error.msg & "\n\n"
-#     else:
-#       msg &= "a validation error\n"
-#       msg &= " [X] " & error.errors[0].msg & "\n\n"
-#     raise (ref ValidationDefect)(msg: msg)

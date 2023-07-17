@@ -17,14 +17,14 @@ macro enforce(
     static:
       when compiles(`T1`.`field`):
         if typeof(`T1`.`field`) isnot `T2`:
-          raise (ref AssertionDefect)(msg:
-            ("""field '$#' of type '$#' is type '$#' but is required """ &
-             """to be type '$#'""") %
-            [`fieldName`, name(`T1`), name(`T1`.`field`), name(`T2`)])
+          raise (ref AssertionDefect)(
+            msg: ("""field '$#' of type '$#' is type '$#' but is required """ &
+                  """to be type '$#'""") %
+                 [`fieldName`, name(`T1`), name(`T1`.`field`), name(`T2`)])
       else:
-        raise (ref AssertionDefect)(msg:
-          """type '$#' does not have required field '$#'""" %
-          [name(`T1`), `fieldName`])
+        raise (ref AssertionDefect)(
+          msg: """type '$#' does not have required field '$#'""" %
+               [name(`T1`), `fieldName`])
 
 func initStatechart*[St: enum; Ev: enum; Dm: object; Em: object](
     scInitial: Opt[St] = Opt.none St,
@@ -779,7 +779,7 @@ macro fixup(
     debugEcho Em
     debugEcho ""
     debugEcho "fixup(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
-      $toStrLit(children) & ")"
+              $toStrLit(children) & ")"
     debugEcho ""
     debugEcho "children.len: " & $children.len
     debugEcho ""
@@ -864,7 +864,7 @@ macro form1NoChildren(
   when defined(debugMacros):
     debugEcho ""
     debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
-      $toStrLit(args) & ")"
+              $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -899,7 +899,7 @@ macro form1WithChildren(
   when defined(debugMacros):
     debugEcho ""
     debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
-      $toStrLit(args) & ")"
+              $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -937,7 +937,7 @@ macro form2WithChildren(
   when defined(debugMacros):
     debugEcho ""
     debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
-      $toStrLit(args) & ")"
+              $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -1007,7 +1007,7 @@ macro form3WithChildren(
   when defined(debugMacros):
     debugEcho ""
     debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
-      $toStrLit(args) & ")"
+              $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -1119,7 +1119,7 @@ macro form4NoChildren(
   when defined(debugMacros):
     debugEcho ""
     debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
-      $toStrLit(args) & ")"
+              $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
@@ -1188,7 +1188,7 @@ macro form5NoChildren(
   when defined(debugMacros):
     debugEcho ""
     debugEcho form & "(" & $St & ", " & $Ev & ", " & $Dm & ", " & $Em & ", " &
-      $toStrLit(args) & ")"
+              $toStrLit(args) & ")"
     debugEcho ""
     debugEcho "args.len: " & $argsLen
     debugEcho ""
