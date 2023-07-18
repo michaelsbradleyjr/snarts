@@ -24,4 +24,34 @@ suite "Validation":
     check:
       res.isErr
       res.error.errors.len == 1
-      "has no child nodes" in res.error.errors[0].msg
+      "has no children" in res.error.errors[0].msg
+
+  test "statechart root must not have an 'initial' child":
+    spec = statechart(
+      States, Events, Data, Event, [
+        initial(),
+        initial()
+    ])
+
+    res = spec.compile
+
+    check:
+      res.isErr
+      res.error.errors.len == 1
+      "has an 'initial'" in res.error.errors[0].msg
+
+  test "statechart root must not have a 'history' child":
+    spec = statechart(
+      States, Events, Data, Event, [
+        history(),
+        history()
+    ])
+
+    res = spec.compile
+
+    # let machine = res.expect
+
+    check:
+      res.isErr
+      res.error.errors.len == 1
+      "has a 'history'" in res.error.errors[0].msg

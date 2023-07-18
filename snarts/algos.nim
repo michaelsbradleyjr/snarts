@@ -106,8 +106,31 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
       spec.scName.get
     else:
       "anonymous"
+  # probably want depth-first traversal/validation since that would be the
+  # natural "reading order" of someone reviewing the spec
+  # root validation
   if spec.scChildren.len == 0:
-    errors.add ValidationError(msg: "statechart has no child nodes")
+    errors.add ValidationError(msg: "statechart root has no children")
+  else:
+    var
+      rootHasInitial = false
+      rootHasHistory = false
+    for node in spec.scChildren:
+      case node.kind:
+      of snkInitial:
+        if not rootHasInitial:
+          rootHasInitial = true
+          errors.add ValidationError(
+            msg: "statechart root has an 'initial' child")
+      of snkHistory:
+        if not rootHasHistory:
+          rootHasHistory = true
+          errors.add ValidationError(
+            msg: "statechart root has a 'history' child")
+      else:
+        discard
+  # child validation
+  # for node in ...
   if errors.len > 0:
     err CompilerError(
       msg: "Statechart[" & $spec.St & ", " & $spec.Ev & ", " & $spec.Dm & ", " &
