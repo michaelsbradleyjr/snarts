@@ -110,7 +110,8 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
   # natural "reading order" of someone reviewing the spec
   # root validation
   if spec.scChildren.len == 0:
-    errors.add ValidationError(msg: "statechart root has no children")
+    errors.add ValidationError(
+      msg: "statechart root must have one or more children")
   else:
     var
       rootHasInitial = false
@@ -121,12 +122,12 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
         if not rootHasInitial:
           rootHasInitial = true
           errors.add ValidationError(
-            msg: "statechart root has an 'initial' child")
+            msg: "statechart root must not have an 'initial' child")
       of snkHistory:
         if not rootHasHistory:
           rootHasHistory = true
           errors.add ValidationError(
-            msg: "statechart root has a 'history' child")
+            msg: "statechart root must not have a 'history' child")
       else:
         discard
   # child validation

@@ -20,11 +20,12 @@ suite "Validation":
     spec = statechart(States, Events, Data, Event)
     res = spec.compile
 
-  test "statechart must have one or more children":
+  test "statechart root must have one or more children":
+    # let machine = res.expect
     check:
       res.isErr
       res.error.errors.len == 1
-      "has no children" in res.error.errors[0].msg
+      "must have one or more" in res.error.errors[0].msg
 
   test "statechart root must not have an 'initial' child":
     spec = statechart(
@@ -35,10 +36,11 @@ suite "Validation":
 
     res = spec.compile
 
+    # let machine = res.expect
     check:
       res.isErr
       res.error.errors.len == 1
-      "has an 'initial'" in res.error.errors[0].msg
+      "must not have an 'initial'" in res.error.errors[0].msg
 
   test "statechart root must not have a 'history' child":
     spec = statechart(
@@ -50,8 +52,7 @@ suite "Validation":
     res = spec.compile
 
     # let machine = res.expect
-
     check:
       res.isErr
       res.error.errors.len == 1
-      "has a 'history'" in res.error.errors[0].msg
+      "must not have a 'history'" in res.error.errors[0].msg
