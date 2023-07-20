@@ -108,9 +108,8 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
       spec.scName.get
     else:
       "anonymous"
-
   # probably want depth-first traversal for validation since that would be the
-  # natural "reading order" (top-to-bottom) of someone reviewing a statechart
+  # natural "reading order" (top to bottom) of someone reviewing a statechart
 
   # should make an effort to have the order of errors reported read like the
   # SCXML specification on a per node basis, starting with the root; that will
@@ -192,9 +191,9 @@ proc expect*[St: enum; Ev: enum; Dm: object; Em: object; E: CompilerError](
       msg: msg & ": " & res.error.validationDefectMsg)
 
 proc expect*[St: enum; Ev: enum; Dm: object; Em: object; E: InterpreterError](
-  res: Result[ref Actor[St, Ev, Dm, Em], E],
-  msg = FailureNotExpected):
-    ref Actor[St, Ev, Dm, Em] =
+    res: Result[ref Actor[St, Ev, Dm, Em], E],
+    msg = FailureNotExpected):
+      ref Actor[St, Ev, Dm, Em] =
   results.expect(res, msg)
 
 proc expect*[E: InterpreterError](
@@ -204,11 +203,11 @@ proc expect*[E: InterpreterError](
   results.expect(res, msg)
 
 proc start*[St: enum; Ev: enum; Dm: object; Em: object](
-  machine: Machine[St, Ev, Dm, Em]):
-    Result[ref Actor[St, Ev, Dm, Em], InterpreterError] =
+    machine: Machine[St, Ev, Dm, Em]):
+      Result[ref Actor[St, Ev, Dm, Em], InterpreterError] =
   ok (ref Actor[St, Ev, Dm, Em])()
 
 proc stop*[St: enum; Ev: enum; Dm: object; Em: object](
-  actor: ref Actor[St, Ev, Dm, Em]):
-    Result[void, InterpreterError] =
+    actor: ref Actor[St, Ev, Dm, Em]):
+      Result[void, InterpreterError] =
   ok()

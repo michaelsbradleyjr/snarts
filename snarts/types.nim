@@ -153,16 +153,10 @@ type
 
   ValidationError* = object of CatchableError
 
-func `$`*(x: Cond): string =
+func `$`*(x: Cond | Exe): string =
   x.string
 
-func `$`*(x: Exe): string =
-  x.string
-
-func `==`*(a, b: Cond): bool =
-  a.string == b.string
-
-func `==`*(a, b: Exe): bool =
+func `==`*(a, b: Cond | Exe): bool =
   a.string == b.string
 
 func `==`*[St, Ev, Dm, Em](
@@ -173,58 +167,40 @@ func `==`*[St, Ev, Dm, Em](
   else:
     when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
       {.push warning[BareExcept]: off.}
-    case a.kind
-    of snkState:
-      try:
+    try:
+      case a.kind
+      of snkState:
         result = (
           (a.sId == b.sId) and
           (a.sInitial == b.sInitial) and
           (a.sChildren == b.sChildren))
-      except Exception as e:
-        raise (ref Defect)(msg: e.msg)
-    of snkParallel:
-      try:
+      of snkParallel:
         result = (
           (a.pId == b.pId) and
           (a.pChildren == b.pChildren))
-      except Exception as e:
-        raise (ref Defect)(msg: e.msg)
-    of snkTransition:
-      try:
+      of snkTransition:
         result = (
           (a.tEvent == b.tEvent) and
           (a.tCond == b.tCond) and
           (a.tTarget == b.tTarget) and
           (a.tKind == b.tKind) and
           (a.tExe == b.tExe))
-      except Exception as e:
-        raise (ref Defect)(msg: e.msg)
-    of snkInitial:
-      try:
+      of snkInitial:
         result = (
           a.iChildren == b.iChildren)
-      except Exception as e:
-        raise (ref Defect)(msg: e.msg)
-    of snkFinal:
-      try:
+      of snkFinal:
         result = (
           (a.fId == b.fId) and
           (a.fChildren == b.fChildren))
-      except Exception as e:
-        raise (ref Defect)(msg: e.msg)
-    of snkOnEntry, snkOnExit:
-      try:
+      of snkOnEntry, snkOnExit:
         result = (
           a.oExe == b.oExe)
-      except Exception as e:
-        raise (ref Defect)(msg: e.msg)
-    of snkHistory:
-      try:
+      of snkHistory:
         result = (
           (a.hId == b.hId) and
           (a.hKind == b.hKind) and
           (a.hChildren == b.hChildren))
-      except Exception as e:
-        raise (ref Defect)(msg: e.msg)
+    except Exception as e:
+      raise (ref Defect)(msg: e.msg)
     when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
       {.pop.}
