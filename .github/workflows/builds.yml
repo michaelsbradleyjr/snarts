@@ -62,11 +62,11 @@ jobs:
         if: matrix.platform.os == 'windows'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: CLANG64
           install: >
             base-devel
             git
-            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-clang-x86_64-toolchain
 
       - name: Checkout snarts sources
         uses: actions/checkout@v3
