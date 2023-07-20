@@ -17,10 +17,25 @@ suite "Validation":
       name: Events
 
   var
+    spec = initStatechart[States, Events, Data, Event](
+      scName = Opt.some "",
+      scChildren = [
+        state(States, Events, Data, Event)
+    ])
+
+    res = spec.compile
+
+  test "statechart root's 'name' field must not contain an empty string":
+    # let machine = res.expect
+    check:
+      res.isErr
+      res.error.errors.len == 1
+      "contain an empty string" in res.error.errors[0].msg
+
+  test "statechart root must have one or more children":
     spec = statechart(States, Events, Data, Event)
     res = spec.compile
 
-  test "statechart root must have one or more children":
     # let machine = res.expect
     check:
       res.isErr

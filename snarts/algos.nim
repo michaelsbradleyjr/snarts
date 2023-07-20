@@ -19,7 +19,9 @@ export types
 const FailureNotExpected = "failure not expected"
 
 func wrap(s: string): string =
-  if s == "anonymous":
+  if s == "":
+    ""
+  elif s == "anonymous":
     "<<" & s & ">>"
   else:
     "'" & s & "'"
@@ -106,9 +108,30 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
       spec.scName.get
     else:
       "anonymous"
-  # probably want depth-first traversal/validation since that would be the
-  # natural "reading order" of someone reviewing the spec
+
+  # probably want depth-first traversal for validation since that would be the
+  # natural "reading order" (top-to-bottom) of someone reviewing a statechart
+
+  # should make an effort to have the order of errors reported read like the
+  # SCXML specification on a per node basis, starting with the root; that will
+  # necessitate some arrays or tables for tracking of "error positions" because
+  # e.g. whether root's `initial` field is valid can only be known after the
+  # entire tree has been traversed; at the end they can all be piled into `var
+  # errors` seq in the overall preferred order (per goal described above)
+
+  # test descriptions should be a close match for the language and order in the
+  # SCXML specification, and the specific errors reported should try to match
+  # that, though the latter will need to include some specifics like the node
+  # id or <<anonymous>>, what the incorrect state id was, etc.
+
   # root validation
+  # ----------------------------------------------------------------------------
+  # need to check if the `St` member specified for field `initial=` is used in
+  # the chart as a state `id=`, and if entering that state at interpreter start
+  # will result in a legal state configuration
+  if specName == "":
+    errors.add ValidationError(
+      msg: "statechart root's 'name' field must not contain an empty string")
   if spec.scChildren.len == 0:
     errors.add ValidationError(
       msg: "statechart root must have one or more children")
@@ -131,11 +154,15 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
       else:
         discard
   # child validation
+  # ----------------------------------------------------------------------------
   # for node in ...
+  # errors
+  # ----------------------------------------------------------------------------
   if errors.len > 0:
     err CompilerError(
       msg: "Statechart[" & $spec.St & ", " & $spec.Ev & ", " & $spec.Dm & ", " &
-           $spec.Em & "] " & specName.wrap & " is invalid:",
+           $spec.Em & "] " & specName.wrap & (if specName == "": "" else: " ") &
+           "is invalid",
       errors: errors,
       specName: specName,
       states: $spec.St,
@@ -149,7 +176,7 @@ func compile*[St: enum; Ev: enum; Dm: object; Em: object](
     ok computer # Radiohead 1997, what a year!
 
 func validationDefectMsg(e: CompilerError): string =
-  var msg = "\n" & e.msg & "\n"
+  var msg = "\n" & e.msg & ":\n"
   for i, error in e.errors.pairs:
     msg &= " [" & $(i + 1) & "] " & error.msg & "\n"
   msg
