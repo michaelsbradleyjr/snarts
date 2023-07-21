@@ -109,11 +109,11 @@ jobs:
             ${{ steps.cache-key.outputs.choosenim }}
             ${{ steps.cache-key.outputs.nimble }}/bin
           key: "${{ matrix.platform.os }}\
-                +choosenim_version:${{ steps.cache-key.outputs.choosenim_version }}\
+                +choosenim:${{ steps.cache-key.outputs.choosenim_version }}\
                 +choosenim_commit:${{ steps.cache-key.outputs.choosenim_commit }}\
                 +nim:${{ matrix.nim_version }}\
                 +nim_commit:${{ steps.cache-key.outputs.nim_commit }}\
-                +cache_marker:${{ matrix.cache_marker }}"
+                +cache:${{ matrix.cache_marker }}"
 
       - name: Install choosenim and Nim
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
