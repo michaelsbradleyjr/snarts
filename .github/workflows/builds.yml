@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 10 ]
+        cache_marker: [ 11 ]
         platform:
           - {
             icon: 🐧,
@@ -48,15 +48,16 @@ jobs:
         if: matrix.platform.os == 'ubuntu'
         run: |
           :
-          # sudo apt-fast update -qq
-          # sudo DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -yq \
-          #   ...
+          sudo apt-fast update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -yq \
+            lcov
 
       - name: Install tools and libraries via Homebrew (macOS)
         if: matrix.platform.os == 'macos'
         run: |
           brew install \
-            bash
+            bash \
+            lcov
 
       - name: Install tools and libraries via MSYS2 (Windows)
         if: matrix.platform.os == 'windows'
@@ -66,6 +67,7 @@ jobs:
           install: >
             base-devel
             git
+            mingw-w64-clang-x86_64-lcov
             mingw-w64-clang-x86_64-toolchain
 
       - name: Checkout snarts sources
@@ -165,3 +167,9 @@ jobs:
         run: |
           source "${HOME}/.bash_env"
           nimble --verbose test
+
+      - name: Calculate and report code coverage
+        run: |
+          source "${HOME}/.bash_env"
+          export CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }}
+          extras/coverage.sh
