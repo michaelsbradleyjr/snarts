@@ -3,7 +3,7 @@
 [![License: Apache](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Stability: experimental](https://img.shields.io/badge/Stability-experimental-orange.svg)](#stability)
-[![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/snarts/workflows/Builds/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/snarts/actions?query=workflow%3ABuilds+branch%3Amaster)
+[![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/snarts/actions/workflows/builds.yml/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/snarts/actions?query=workflow%3ABuilds+branch%3Amaster)
 [![codecov](https://codecov.io/github/michaelsbradleyjr/snarts/branch/master/graph/badge.svg?token=AROG63USFC)](https://codecov.io/github/michaelsbradleyjr/snarts)
 
 Executable [Statecharts](https://en.wikipedia.org/wiki/State_diagram#Harel_statechart) for [Nim](https://nim-lang.org).
